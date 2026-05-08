@@ -4,7 +4,7 @@
  * Handles block-level elements, shadow DOM, aria-* attributes, data-* attributes, tables, selects.
  */
 
-import { Page, Frame } from 'playwright-core';
+import { Page, Frame } from 'playwright';
 import { DOMContent, TableData, SemanticAttribute, SelectOption } from './types';
 
 export interface IFrameInfo {

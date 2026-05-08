@@ -90,7 +90,7 @@ export interface NavigationContext {
 export interface ExtractedData {
   data: any;
   confidence: number;
-  strategy: 'dom_screenshot' | 'dom_only' | 'network_json' | 'screenshot_only';
+  strategy: 'dom_screenshot' | 'dom_only' | 'local_review_dom' | 'network_json' | 'screenshot_only';
   raw?: {
     dom?: string;
     tables?: TableData[];

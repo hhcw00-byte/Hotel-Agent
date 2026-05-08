@@ -3,7 +3,7 @@
  * Manages browser connection, tab operations, and basic page actions
  */
 
-import { chromium, Browser, Page, CDPSession } from 'playwright-core';
+import { chromium, Browser, Page, CDPSession } from 'playwright';
 import { TabInfo, ScreenshotOptions } from './types';
 import { ScreenshotManager } from './screenshot-manager';
 // 注意：反检测系统暂时注释，等待正确配置后启用

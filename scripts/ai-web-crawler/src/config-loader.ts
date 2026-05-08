@@ -53,7 +53,7 @@ export class ConfigLoader {
       const fileContent = fs.readFileSync(yamlPath, 'utf8');
       fileConfig = yaml.load(fileContent) as Partial<AppConfig>;
     } else {
-      throw new Error('Config file not found (neither config.enc nor config.yaml)');
+      console.error(`[ConfigLoader] Config file not found at ${baseDir}; using built-in defaults`);
     }
 
     // Merge with environment variables

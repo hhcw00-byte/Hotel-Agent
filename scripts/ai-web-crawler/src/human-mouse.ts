@@ -8,7 +8,7 @@
  * 独立模块，不依赖主进程路径，可在爬虫子进程中直接使用
  */
 
-import { Page } from 'playwright-core';
+import { Page } from 'playwright';
 
 export interface Point {
   x: number;

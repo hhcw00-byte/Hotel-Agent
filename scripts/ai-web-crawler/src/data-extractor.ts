@@ -26,13 +26,14 @@ export class DataExtractor {
    */
   async extract(context: ExtractionContext): Promise<ExtractedData> {
     const strategies = [
+      () => this.tryLocalReviewDOM(context),      // 评价/消息页：无 LLM 时也能提取可见内容
       () => this.tryDOMScreenshotFusion(context), // 优先：最准确
       () => this.tryDOMOnly(context),             // 次优：中等速度和准确度
       () => this.tryNetworkJSON(context),         // 备选：快但可能不相关
       () => this.tryScreenshotOnly(context),      // 兜底：最慢
     ];
 
-    const strategyNames = ['dom_screenshot_fusion', 'dom_only', 'network_json', 'screenshot_only'];
+    const strategyNames = ['local_review_dom', 'dom_screenshot_fusion', 'dom_only', 'network_json', 'screenshot_only'];
 
     for (let i = 0; i < strategies.length; i++) {
       const name = strategyNames[i] ?? `strategy_${i}`;
@@ -56,6 +57,108 @@ export class DataExtractor {
       strategy: 'dom_screenshot',
       raw: {},
     };
+  }
+
+  /**
+   * Local extractor for OTA review pages. This keeps smart-reply usable when
+   * no LLM API key is configured, and avoids falling back to API count-only data.
+   */
+  private async tryLocalReviewDOM(context: ExtractionContext): Promise<ExtractedData | null> {
+    if (!context.domContent || !this.isReviewGoal(context.goal)) return null;
+
+    const lines = context.domContent.text
+      .flatMap(text => text.split(/\n+/))
+      .map(text => text.replace(/\s+/g, ' ').trim())
+      .filter(Boolean);
+
+    const reviews = this.extractCtripReviewItems(lines);
+    if (reviews.length === 0) return null;
+
+    return {
+      data: reviews,
+      confidence: 0.82,
+      strategy: 'local_review_dom',
+      raw: { dom: lines.join('\n').slice(0, 12000) },
+    };
+  }
+
+  private isReviewGoal(goal: string): boolean {
+    return /评价|点评|评论|评语|差评|好评|回复|消息|IM/i.test(goal);
+  }
+
+  private extractCtripReviewItems(lines: string[]): any[] {
+    const reviews: any[] = [];
+    const dateLine = /^\d{4}年\d{1,2}月$/;
+    const publishLine = /^发表于[:：]\s*(.+)$/;
+    const scoreLine = /^(\d(?:\.\d)?)(超棒|很好|不错|一般|较差|差|分)?$/;
+    const dimensionLine = /^(设施|卫生|环境|服务)\s*(\d(?:\.\d)?)$/;
+    const ignorePrefixes = [
+      '反馈异常点评',
+      '此点评不计入点评分数',
+      '选取规则详见',
+      '回复',
+    ];
+
+    for (let i = 0; i < lines.length - 5; i++) {
+      const user = lines[i];
+      if (!user || user.length > 40 || dateLine.test(user)) continue;
+      if (!dateLine.test(lines[i + 1])) continue;
+
+      const roomName = lines[i + 2] || '';
+      let cursor = i + 3;
+      if (lines[cursor] === '反馈异常点评') cursor++;
+
+      const scoreMatch = lines[cursor]?.match(scoreLine);
+      if (!scoreMatch) continue;
+
+      const item: any = {
+        user,
+        stayMonth: lines[i + 1],
+        roomName,
+        rating: Number(scoreMatch[1]),
+        ratingText: scoreMatch[2] || undefined,
+        dimensions: {},
+        content: '',
+        publishedAt: '',
+        replyStatus: 'unknown',
+      };
+      cursor++;
+
+      while (cursor < lines.length) {
+        const dimMatch = lines[cursor].match(dimensionLine);
+        if (!dimMatch) break;
+        item.dimensions[dimMatch[1]] = Number(dimMatch[2]);
+        cursor++;
+      }
+
+      const contentParts: string[] = [];
+      while (cursor < lines.length) {
+        const line = lines[cursor];
+        const published = line.match(publishLine);
+        if (published) {
+          item.publishedAt = published[1];
+          break;
+        }
+        if (!ignorePrefixes.some(prefix => line.startsWith(prefix))) {
+          contentParts.push(line);
+        }
+        cursor++;
+      }
+
+      item.content = contentParts.join(' ').trim();
+      if (!item.content || !item.publishedAt) continue;
+
+      const duplicate = reviews.some(existing =>
+        existing.user === item.user
+        && existing.publishedAt === item.publishedAt
+        && existing.content === item.content
+      );
+      if (!duplicate) reviews.push(item);
+
+      i = Math.max(i, cursor);
+    }
+
+    return reviews.slice(0, 30);
   }
 
   /**
