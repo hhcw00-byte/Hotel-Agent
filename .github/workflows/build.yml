@@ -12,7 +12,7 @@ on:
   # tag 触发：git tag v1.4.0 && git push --tags
   push:
     tags:
-      - 'v*'
+      - 'relsese-*'
 
 # 同一时间只允许一个打包任务运行，避免资源浪费
 concurrency:
