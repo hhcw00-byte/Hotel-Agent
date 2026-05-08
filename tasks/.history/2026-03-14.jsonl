@@ -1,0 +1,2 @@
+{"taskId":"meituan-room-status","skill":"room-status","startTime":1773456300006,"endTime":1773456301475,"duration":1469,"success":false,"error":"Connection error."}
+{"taskId":"meituan-room-status","skill":"room-status","startTime":1773456360009,"endTime":1773456961871,"duration":601862,"success":false,"error":"Task timeout after 600s"}

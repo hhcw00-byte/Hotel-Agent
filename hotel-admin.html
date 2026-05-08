@@ -1,0 +1,2722 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title id="pageTitle">酒店管理后台</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Microsoft YaHei', sans-serif;
+      font-size: 14px;
+      color: #333;
+      background: #f0f2f5;
+      height: 100vh;
+      overflow: hidden;
+    }
+    .admin-layout { display: flex; height: 100vh; }
+
+    /* 侧边栏 */
+    .sidebar {
+      width: 220px;
+      background: linear-gradient(180deg, #001529 0%, #002140 100%);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+    }
+    .sidebar-logo {
+      height: 56px;
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+    .sidebar-logo svg { width: 28px; height: 28px; margin-right: 10px; color: #1890ff; }
+    .sidebar-logo span { font-size: 16px; font-weight: 600; color: #fff; white-space: nowrap; }
+    .sidebar-menu { flex: 1; padding: 8px 0; overflow-y: auto; }
+    .menu-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 12px 24px; cursor: pointer;
+      color: rgba(255,255,255,0.65); transition: all 0.2s;
+      font-size: 14px; text-decoration: none; border: none; background: none; width: 100%;
+    }
+    .menu-item:hover { color: #fff; background: rgba(255,255,255,0.06); }
+    .menu-item.active {
+      color: #fff; background: #1890ff;
+      border-right: 3px solid #69c0ff;
+    }
+    .menu-item svg { width: 18px; height: 18px; flex-shrink: 0; }
+
+    /* 主内容区 */
+    .main-area { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+    .main-header {
+      height: 56px; background: #fff;
+      border-bottom: 1px solid #e8e8e8;
+      display: flex; align-items: center;
+      padding: 0 24px; font-size: 18px; font-weight: 600; color: #1a1a2e;
+      flex-shrink: 0;
+    }
+    .main-content { flex: 1; padding: 24px; overflow-y: auto; }
+    /* 内容卡片 */
+    .content-card {
+      background: #fff; border-radius: 8px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+      padding: 24px; margin-bottom: 20px;
+    }
+    .content-card h3 {
+      font-size: 16px; font-weight: 600; margin-bottom: 16px; color: #1a1a2e;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .content-card h3 .badge {
+      font-size: 12px; font-weight: 400; color: #fff; background: #52c41a;
+      padding: 2px 8px; border-radius: 10px;
+    }
+    .content-card h3 .badge.empty { background: #faad14; }
+
+    /* 表单 */
+    .form-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+    .form-label { width: 80px; text-align: right; color: #666; flex-shrink: 0; }
+    .form-input {
+      flex: 1; max-width: 360px; height: 36px; padding: 0 12px;
+      border: 1px solid #d9d9d9; border-radius: 6px; font-size: 14px;
+      outline: none; transition: border-color 0.2s;
+    }
+    .form-input:focus { border-color: #1890ff; box-shadow: 0 0 0 2px rgba(24,144,255,0.1); }
+    .btn {
+      height: 36px; padding: 0 16px; border: none; border-radius: 6px;
+      font-size: 14px; cursor: pointer; transition: all 0.2s;
+      display: inline-flex; align-items: center; gap: 4px;
+    }
+    .btn-primary { background: #1890ff; color: #fff; }
+    .btn-primary:hover { background: #40a9ff; }
+    .btn-primary:disabled { background: #d9d9d9; cursor: not-allowed; }
+    .btn-danger { background: #fff; color: #ff4d4f; border: 1px solid #ff4d4f; }
+    .btn-danger:hover { background: #fff1f0; }
+    .btn-sm { height: 28px; padding: 0 10px; font-size: 12px; }
+
+    /* 竞品列表 */
+    .competitor-list { margin-top: 12px; }
+    .competitor-item {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 16px; border: 1px solid #f0f0f0; border-radius: 6px;
+      margin-bottom: 8px; transition: background 0.2s;
+    }
+    .competitor-item:hover { background: #fafafa; }
+    .competitor-item .name { font-weight: 500; }
+    .competitor-item .meta { color: #999; font-size: 12px; }
+    .competitor-item .actions { display: flex; gap: 8px; }
+    .comp-dist { margin-left: 8px; font-size: 12px; color: #1890ff; background: #e6f7ff; padding: 1px 6px; border-radius: 3px; }
+    .comp-address { font-size: 12px; color: #999; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    /* 周边搜索 */
+    .nearby-header { display: flex; align-items: center; justify-content: space-between; margin: 12px 0 8px; }
+    .nearby-list { max-height: 400px; overflow-y: auto; border: 1px solid #f0f0f0; border-radius: 6px; }
+    .nearby-item {
+      display: flex; align-items: center; gap: 10px; padding: 10px 14px;
+      border-bottom: 1px solid #f5f5f5; cursor: pointer; transition: background 0.15s;
+    }
+    .nearby-item:last-child { border-bottom: none; }
+    .nearby-item:hover { background: #f0f7ff; }
+    .nearby-item.added { opacity: 0.55; cursor: default; }
+    .nearby-item input[type="checkbox"] { flex-shrink: 0; width: 16px; height: 16px; accent-color: #1890ff; }
+    .nearby-info { flex: 1; min-width: 0; }
+    .nearby-name { font-weight: 500; font-size: 14px; display: block; }
+    .nearby-meta { font-size: 12px; color: #999; display: block; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .nearby-tag { font-size: 11px; padding: 2px 8px; border-radius: 3px; white-space: nowrap; flex-shrink: 0; }
+    .dist-tag { color: #1890ff; background: #e6f7ff; }
+    .added-tag { color: #52c41a; background: #f6ffed; }
+    .search-loading { text-align: center; padding: 24px; color: #999; font-size: 13px; }
+    .spinner-small {
+      display: inline-block; width: 14px; height: 14px; border: 2px solid #e0e0e0;
+      border-top-color: #1890ff; border-radius: 50%; animation: spin 0.6s linear infinite;
+      vertical-align: middle; margin-right: 6px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* 空状态 */
+    .empty-state { text-align: center; padding: 32px 0; color: #999; }
+    .empty-state .icon { font-size: 36px; margin-bottom: 8px; opacity: 0.4; }
+
+    /* Toast */
+    .toast {
+      position: fixed; top: 20px; right: 20px; padding: 12px 20px;
+      border-radius: 6px; color: #fff; font-size: 14px; z-index: 9999;
+      opacity: 0; transform: translateY(-10px);
+      transition: all 0.3s ease;
+    }
+    .toast.show { opacity: 1; transform: translateY(0); }
+    .toast.success { background: #52c41a; }
+    .toast.error { background: #ff4d4f; }
+    .toast.info { background: #1890ff; }
+
+    /* 加载状态 */
+    .loading { text-align: center; padding: 40px; color: #999; }
+    .loading::after {
+      content: ''; display: inline-block; width: 20px; height: 20px;
+      border: 2px solid #d9d9d9; border-top-color: #1890ff;
+      border-radius: 50%; animation: spin 0.8s linear infinite;
+      margin-left: 8px; vertical-align: middle;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* 开关组件 */
+    .switch {
+      position: relative; display: inline-block; width: 44px; height: 22px; flex-shrink: 0;
+    }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .switch .slider {
+      position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+      background: #ccc; border-radius: 22px; transition: 0.3s;
+    }
+    .switch .slider::before {
+      content: ''; position: absolute; height: 18px; width: 18px; left: 2px; bottom: 2px;
+      background: #fff; border-radius: 50%; transition: 0.3s;
+    }
+    .switch input:checked + .slider { background: #1890ff; }
+    .switch input:checked + .slider::before { transform: translateX(22px); }
+    .switch input:disabled + .slider { opacity: 0.4; cursor: not-allowed; }
+
+    /* 平台卡片 */
+    .platform-card {
+      border: 1px solid #f0f0f0; border-radius: 8px; padding: 16px; margin-bottom: 12px;
+      transition: border-color 0.2s;
+    }
+    .platform-card.disabled { opacity: 0.6; }
+    .platform-card-header {
+      display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;
+    }
+    .platform-card-header .platform-name { font-size: 15px; font-weight: 600; }
+    .platform-card-header .platform-status {
+      font-size: 12px; margin-left: 8px; padding: 2px 8px; border-radius: 10px;
+    }
+    .platform-card-header .platform-status.on { background: #e6f7ff; color: #1890ff; }
+    .platform-card-header .platform-status.off { background: #fff1f0; color: #ff4d4f; }
+    .skill-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 8px 12px; border-radius: 6px; margin-bottom: 4px;
+    }
+    .skill-row:hover { background: #fafafa; }
+    .skill-row .skill-label { color: #555; font-size: 13px; }
+    .skill-row .skill-desc { color: #999; font-size: 12px; margin-left: 8px; }
+
+    /* 数据面板 */
+    .dashboard-tabs {
+      display: flex; gap: 0; margin-bottom: 20px; border-bottom: 2px solid #f0f0f0;
+    }
+    .dashboard-tab {
+      padding: 10px 20px; cursor: pointer; font-size: 14px; color: #666;
+      border: none; background: none; border-bottom: 2px solid transparent;
+      margin-bottom: -2px; transition: all 0.2s;
+    }
+    .dashboard-tab:hover { color: #1890ff; }
+    .dashboard-tab.active { color: #1890ff; border-bottom-color: #1890ff; font-weight: 600; }
+    .time-range-bar {
+      display: flex; gap: 8px; margin-bottom: 16px;
+    }
+    .time-range-btn {
+      padding: 6px 16px; border: 1px solid #d9d9d9; border-radius: 4px;
+      background: #fff; cursor: pointer; font-size: 13px; color: #555; transition: all 0.2s;
+    }
+    .time-range-btn:hover { border-color: #1890ff; color: #1890ff; }
+    .time-range-btn.active { background: #1890ff; color: #fff; border-color: #1890ff; }
+    .chart-container { position: relative; height: 320px; margin-bottom: 20px; }
+    .chart-container canvas { width: 100% !important; }
+    .no-data-hint { text-align: center; padding: 60px 0; color: #bbb; font-size: 15px; }
+    .stat-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; margin-bottom: 20px; }
+    .stat-card {
+      background: #fff; border-radius: 8px; padding: 16px; border: 1px solid #f0f0f0;
+      text-align: center;
+    }
+    .stat-card .stat-value { font-size: 28px; font-weight: 700; color: #1890ff; }
+    .stat-card .stat-label { font-size: 12px; color: #999; margin-top: 4px; }
+
+    /* 日历表格 */
+    .calendar-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .calendar-table th, .calendar-table td {
+      padding: 6px 8px; text-align: center; border-bottom: 1px solid #f0f0f0;
+      white-space: nowrap;
+    }
+    .calendar-table th {
+      background: #fafafa; font-weight: 600; border-bottom: 2px solid #e8e8e8;
+      position: sticky; top: 0; z-index: 1;
+    }
+    .calendar-table th:first-child, .calendar-table td:first-child {
+      text-align: left; position: sticky; left: 0; background: #fff; z-index: 2;
+    }
+    .calendar-table th:first-child { z-index: 3; background: #fafafa; }
+    .calendar-table .room-group-header {
+      background: #f5f7fa; font-weight: 600; color: #333;
+    }
+    .calendar-table .sub-row td:first-child { padding-left: 24px; color: #888; font-size: 12px; }
+    .calendar-table .price-cell { cursor: default; position: relative; }
+    .calendar-table .price-cell .price-tooltip {
+      display: none; position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%);
+      background: #333; color: #fff; padding: 6px 10px; border-radius: 4px; font-size: 11px;
+      white-space: nowrap; z-index: 10; pointer-events: none;
+    }
+    .calendar-table .price-cell:hover .price-tooltip { display: block; }
+    .calendar-table .price-diff { background: #fff7e6; }
+    .calendar-table .avail-green { background: #f6ffed; color: #389e0d; }
+    .calendar-table .avail-yellow { background: #fffbe6; color: #d48806; }
+    .calendar-table .avail-red { background: #fff1f0; color: #cf1322; }
+    .calendar-table .avail-black { background: #f5f5f5; color: #999; font-weight: bold; }
+    .calendar-table .metric-row td { font-size: 11px; color: #888; }
+    .dashboard-panel { margin-bottom: 20px; }
+    .dashboard-panel h4 {
+      margin: 0 0 12px; font-size: 15px; font-weight: 600; color: #333;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .date-range-bar { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
+    .date-input {
+      height: 32px; padding: 0 10px; border: 1px solid #d9d9d9; border-radius: 4px;
+      font-size: 13px; outline: none;
+    }
+    .date-input:focus { border-color: #1890ff; }
+
+    /* ==================== 暗色主题 ==================== */
+    [data-theme="dark"] body { color: #e0e0e0; background: #1e1e1e; }
+    [data-theme="dark"] .sidebar { background: linear-gradient(180deg, #1a1a1a 0%, #252525 100%); }
+    [data-theme="dark"] .sidebar-logo { border-bottom-color: rgba(255,255,255,0.06); }
+    [data-theme="dark"] .main-header { background: #2d2d2d; border-bottom-color: #404040; color: #e0e0e0; }
+    [data-theme="dark"] .main-content { background: #1e1e1e; }
+    [data-theme="dark"] .content-card { background: #2d2d2d; box-shadow: 0 1px 4px rgba(0,0,0,0.3); }
+    [data-theme="dark"] .content-card h3 { color: #e0e0e0; }
+    [data-theme="dark"] .form-input { background: #383838; border-color: #505050; color: #e0e0e0; }
+    [data-theme="dark"] .form-input:focus { border-color: #5b8dd9; box-shadow: 0 0 0 2px rgba(91,141,217,0.2); }
+    [data-theme="dark"] .form-label { color: #a0a0a0; }
+    [data-theme="dark"] .competitor-item { border-color: #404040; }
+    [data-theme="dark"] .competitor-item:hover { background: #383838; }
+    [data-theme="dark"] .competitor-item .name { color: #e0e0e0; }
+    [data-theme="dark"] .competitor-item .meta { color: #6b6b6b; }
+    [data-theme="dark"] .comp-dist { background: #1a3a4d; color: #5bb8f5; }
+    [data-theme="dark"] .comp-address { color: #6b6b6b; }
+    [data-theme="dark"] .nearby-list { border-color: #404040; }
+    [data-theme="dark"] .nearby-item { border-bottom-color: #353535; }
+    [data-theme="dark"] .nearby-item:hover { background: #2a3a4a; }
+    [data-theme="dark"] .nearby-name { color: #e0e0e0; }
+    [data-theme="dark"] .nearby-meta { color: #6b6b6b; }
+    [data-theme="dark"] .dist-tag { background: #1a3a4d; color: #5bb8f5; }
+    [data-theme="dark"] .added-tag { background: #1a3d1a; color: #73d13d; }
+    [data-theme="dark"] .platform-card { border-color: #404040; }
+    [data-theme="dark"] .skill-row:hover { background: #383838; }
+    [data-theme="dark"] .skill-row .skill-label { color: #c0c0c0; }
+    [data-theme="dark"] .skill-row .skill-desc { color: #6b6b6b; }
+    [data-theme="dark"] .dashboard-tabs { border-bottom-color: #404040; }
+    [data-theme="dark"] .dashboard-tab { color: #a0a0a0; }
+    [data-theme="dark"] .dashboard-tab:hover { color: #5b8dd9; }
+    [data-theme="dark"] .dashboard-tab.active { color: #5b8dd9; border-bottom-color: #5b8dd9; }
+    [data-theme="dark"] .time-range-btn { background: #383838; border-color: #505050; color: #c0c0c0; }
+    [data-theme="dark"] .time-range-btn:hover { border-color: #5b8dd9; color: #5b8dd9; }
+    [data-theme="dark"] .time-range-btn.active { background: #5b8dd9; color: #fff; border-color: #5b8dd9; }
+    [data-theme="dark"] .stat-card { background: #383838; border-color: #404040; }
+    [data-theme="dark"] .stat-card .stat-value { color: #5b8dd9; }
+    [data-theme="dark"] .stat-card .stat-label { color: #a0a0a0; }
+    [data-theme="dark"] .no-data-hint { color: #6b6b6b; }
+    [data-theme="dark"] .empty-state { color: #6b6b6b; }
+    [data-theme="dark"] .loading { color: #6b6b6b; }
+    [data-theme="dark"] .calendar-table th { background: #333; border-bottom-color: #505050; color: #c0c0c0; }
+    [data-theme="dark"] .calendar-table td { border-bottom-color: #404040; }
+    [data-theme="dark"] .calendar-table th:first-child { background: #333; }
+    [data-theme="dark"] .calendar-table td:first-child { background: #2d2d2d; }
+    [data-theme="dark"] .calendar-table .room-group-header { background: #353535; color: #e0e0e0; }
+    [data-theme="dark"] .calendar-table .price-diff { background: #3d3520; }
+    [data-theme="dark"] .calendar-table .avail-green { background: #1a3a1a; color: #52c41a; }
+    [data-theme="dark"] .calendar-table .avail-yellow { background: #3d3520; color: #faad14; }
+    [data-theme="dark"] .calendar-table .avail-red { background: #3d2020; color: #ff4d4f; }
+    [data-theme="dark"] .calendar-table .avail-black { background: #2a2a2a; color: #666; }
+    [data-theme="dark"] .dashboard-panel h4 { color: #e0e0e0; }
+    [data-theme="dark"] .date-input { background: #383838; border-color: #505050; color: #e0e0e0; }
+    [data-theme="dark"] .switch .slider { background: #505050; }
+    [data-theme="dark"] .platform-card-header .platform-status.on { background: rgba(91,141,217,0.15); color: #5b8dd9; }
+    [data-theme="dark"] .platform-card-header .platform-status.off { background: rgba(252,129,129,0.15); color: #fc8181; }
+    [data-theme="dark"] .badge { background: #389e0d; }
+    [data-theme="dark"] .badge.empty { background: #d48806; }
+
+    /* ==================== 调度配置编辑器 ==================== */
+    .schedule-toggle-btn {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 8px;
+      border: 1px solid #d9d9d9;
+      border-radius: 4px;
+      background: #fff;
+      cursor: pointer;
+      font-size: 12px;
+      color: #888;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .schedule-toggle-btn:hover {
+      color: #1890ff;
+      border-color: #1890ff;
+    }
+    .schedule-toggle-btn .arrow {
+      display: inline-block;
+      transition: transform 0.2s;
+      font-size: 10px;
+    }
+    .schedule-toggle-btn .arrow.open {
+      transform: rotate(90deg);
+    }
+    .schedule-editor {
+      margin-top: 8px;
+      padding: 12px;
+      border: 1px solid #f0f0f0;
+      border-radius: 6px;
+      background: #fafafa;
+      display: none;
+    }
+    .schedule-editor.open {
+      display: block;
+    }
+    .schedule-type-tabs {
+      display: flex;
+      gap: 0;
+      margin-bottom: 12px;
+      border: 1px solid #d9d9d9;
+      border-radius: 6px;
+      overflow: hidden;
+      width: fit-content;
+    }
+    .schedule-tab {
+      padding: 6px 16px;
+      border: none;
+      background: #fff;
+      cursor: pointer;
+      font-size: 13px;
+      color: #555;
+      transition: all 0.2s;
+      outline: none;
+    }
+    .schedule-tab + .schedule-tab {
+      border-left: 1px solid #d9d9d9;
+    }
+    .schedule-tab:hover {
+      color: #1890ff;
+      background: #e6f7ff;
+    }
+    .schedule-tab.active {
+      background: #1890ff;
+      color: #fff;
+    }
+    .schedule-controls {
+      margin-bottom: 12px;
+    }
+    .schedule-interval-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .schedule-interval-row label {
+      font-size: 13px;
+      color: #555;
+    }
+    .schedule-interval-input {
+      width: 80px;
+      height: 32px;
+      padding: 0 8px;
+      border: 1px solid #d9d9d9;
+      border-radius: 4px;
+      font-size: 13px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .schedule-interval-input:focus {
+      border-color: #1890ff;
+      box-shadow: 0 0 0 2px rgba(24,144,255,0.1);
+    }
+    .schedule-unit-select {
+      height: 32px;
+      padding: 0 8px;
+      border: 1px solid #d9d9d9;
+      border-radius: 4px;
+      font-size: 13px;
+      outline: none;
+      background: #fff;
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+    .schedule-unit-select:focus {
+      border-color: #1890ff;
+    }
+    .schedule-time-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .schedule-time-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .schedule-time-item input[type="time"] {
+      height: 32px;
+      padding: 0 8px;
+      border: 1px solid #d9d9d9;
+      border-radius: 4px;
+      font-size: 13px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .schedule-time-item input[type="time"]:focus {
+      border-color: #1890ff;
+      box-shadow: 0 0 0 2px rgba(24,144,255,0.1);
+    }
+    .schedule-add-btn {
+      margin-top: 4px;
+    }
+
+    /* 爬取中指示器 */
+    .crawling-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      color: #1890ff;
+      padding: 1px 6px;
+      border-radius: 8px;
+      background: #e6f7ff;
+      white-space: nowrap;
+    }
+    .crawling-indicator .dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: #1890ff;
+      animation: crawl-pulse 1.2s ease-in-out infinite;
+    }
+    @keyframes crawl-pulse {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 1; }
+    }
+    [data-theme="dark"] .crawling-indicator {
+      color: #5b8dd9;
+      background: rgba(91,141,217,0.15);
+    }
+    [data-theme="dark"] .crawling-indicator .dot {
+      background: #5b8dd9;
+    }
+
+    /* 暗色主题 - 调度编辑器 */
+    [data-theme="dark"] .schedule-toggle-btn {
+      color: #888;
+      background: #2d2d2d;
+      border-color: #505050;
+    }
+    [data-theme="dark"] .schedule-toggle-btn:hover {
+      color: #5b8dd9;
+      border-color: #5b8dd9;
+    }
+    [data-theme="dark"] .schedule-editor {
+      background: #383838;
+      border-color: #505050;
+    }
+    [data-theme="dark"] .schedule-type-tabs {
+      border-color: #505050;
+    }
+    [data-theme="dark"] .schedule-tab {
+      background: #2d2d2d;
+      color: #c0c0c0;
+      border-color: #505050;
+    }
+    [data-theme="dark"] .schedule-tab + .schedule-tab {
+      border-left-color: #505050;
+    }
+    [data-theme="dark"] .schedule-tab:hover {
+      color: #5b8dd9;
+      background: rgba(91,141,217,0.1);
+    }
+    [data-theme="dark"] .schedule-tab.active {
+      background: #5b8dd9;
+      color: #fff;
+    }
+    [data-theme="dark"] .schedule-interval-row label {
+      color: #c0c0c0;
+    }
+    [data-theme="dark"] .schedule-interval-input {
+      background: #2d2d2d;
+      border-color: #505050;
+      color: #e0e0e0;
+    }
+    [data-theme="dark"] .schedule-interval-input:focus {
+      border-color: #5b8dd9;
+      box-shadow: 0 0 0 2px rgba(91,141,217,0.2);
+    }
+    [data-theme="dark"] .schedule-unit-select {
+      background: #2d2d2d;
+      border-color: #505050;
+      color: #e0e0e0;
+    }
+    [data-theme="dark"] .schedule-unit-select:focus {
+      border-color: #5b8dd9;
+    }
+    [data-theme="dark"] .schedule-time-item input[type="time"] {
+      background: #2d2d2d;
+      border-color: #505050;
+      color: #e0e0e0;
+    }
+    [data-theme="dark"] .schedule-time-item input[type="time"]:focus {
+      border-color: #5b8dd9;
+      box-shadow: 0 0 0 2px rgba(91,141,217,0.2);
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+</head>
+<body>
+  <div class="admin-layout">
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+          <polyline points="9 22 9 12 15 12 15 22"/>
+        </svg>
+        <span id="sidebarTitle">酒店管理后台</span>
+      </div>
+      <nav class="sidebar-menu" id="sidebarMenu"></nav>
+    </aside>
+    <main class="main-area">
+      <header class="main-header" id="mainHeader">酒店信息配置</header>
+      <div class="main-content" id="mainContent"></div>
+    </main>
+  </div>
+<script>
+  // ==================== 主题同步 ====================
+  (function() {
+    var mode = localStorage.getItem('theme-mode') || 'light';
+    document.documentElement.setAttribute('data-theme', mode);
+    window.addEventListener('storage', function(e) {
+      if (e.key === 'theme-mode') {
+        document.documentElement.setAttribute('data-theme', e.newValue || 'light');
+      }
+      if (e.key === 'app-language') {
+        location.reload(); // 语言切换时刷新页面
+      }
+    });
+  })();
+
+  // ==================== i18n ====================
+  var currentLang = localStorage.getItem('app-language') || 'zh';
+
+  var adminI18n = {
+    'admin.title': { zh: '酒店管理后台', en: 'Hotel Admin' },
+    'admin.hotelConfig': { zh: '酒店信息配置', en: 'Hotel Configuration' },
+    'admin.platformConfig': { zh: '数据渠道配置', en: 'Data Channel Config' },
+    'admin.dataDashboard': { zh: '数据展示面板', en: 'Data Dashboard' },
+    'admin.qualityTasks': { zh: '质检任务', en: 'Quality Tasks' },
+    'admin.chatSessions': { zh: '会话管理', en: 'Chat Sessions' },
+    'admin.noSessions': { zh: '暂无会话记录', en: 'No chat sessions' },
+    'admin.deleteSession': { zh: '删除', en: 'Delete' },
+    'admin.confirmDeleteSession': { zh: '确定删除该会话？', en: 'Delete this session?' },
+    'admin.ownHotel': { zh: '本店信息', en: 'Own Hotel' },
+    'admin.hotelName': { zh: '酒店名称', en: 'Hotel Name' },
+    'admin.ownHotelPlaceholder': { zh: '请输入本店名称', en: 'Enter hotel name' },
+    'admin.save': { zh: '保存', en: 'Save' },
+    'admin.add': { zh: '添加', en: 'Add' },
+    'admin.delete': { zh: '删除', en: 'Delete' },
+    'admin.configured': { zh: '已配置', en: 'Configured' },
+    'admin.notConfigured': { zh: '未配置', en: 'Not Configured' },
+    'admin.competitors': { zh: '竞品管理', en: 'Competitor Management' },
+    'admin.competitorPlaceholder': { zh: '输入竞品酒店名称', en: 'Enter competitor name' },
+    'admin.competitorName': { zh: '竞品名称', en: 'Competitor' },
+    'admin.noCompetitors': { zh: '暂无竞品，请添加', en: 'No competitors yet' },
+    'admin.count': { zh: '家', en: '' },
+    'admin.loading': { zh: '加载中', en: 'Loading' },
+    'admin.apiUnavailable': { zh: 'Memory API 不可用，请检查应用配置', en: 'Memory API unavailable, check app config' },
+    'admin.enterHotelName': { zh: '请输入酒店名称', en: 'Please enter hotel name' },
+    'admin.ownUpdated': { zh: '本店名称已更新', en: 'Hotel name updated' },
+    'admin.ownSaved': { zh: '本店信息已保存', en: 'Hotel info saved' },
+    'admin.saveFailed': { zh: '保存失败', en: 'Save failed' },
+    'admin.enterCompetitorName': { zh: '请输入竞品名称', en: 'Please enter competitor name' },
+    'admin.competitorAdded': { zh: '竞品已添加', en: 'Competitor added' },
+    'admin.addFailed': { zh: '添加失败', en: 'Add failed' },
+    'admin.confirmDelete': { zh: '确定删除竞品', en: 'Delete competitor' },
+    'admin.deleted': { zh: '已删除', en: 'Deleted' },
+    'admin.deleteFailed': { zh: '删除失败', en: 'Delete failed' },
+    'admin.channelConfig': { zh: '数据渠道配置', en: 'Data Channel Config' },
+    'admin.channelHint': { zh: '控制各平台数据采集开关。开启后系统会自动定时采集对应平台数据。', en: 'Control data collection per platform. Enabled platforms collect data automatically.' },
+    'admin.enabled': { zh: '已启用', en: 'Enabled' },
+    'admin.disabled': { zh: '已禁用', en: 'Disabled' },
+    'admin.allEnabled': { zh: '全部启用', en: 'All Enabled' },
+    'admin.noChannels': { zh: '暂无数据渠道', en: 'No data channels' },
+    'admin.operationFailed': { zh: '操作失败', en: 'Operation failed' },
+    'admin.dashboardUnavailable': { zh: 'Dashboard API 不可用', en: 'Dashboard API unavailable' },
+    'admin.publicPricing': { zh: '公网价格', en: 'Public Pricing' },
+    'admin.competitor': { zh: '竞品对比', en: 'Competitor Compare' },
+    'admin.backendPricing': { zh: '本店后台', en: 'Backend Pricing' },
+    'admin.roomStatus': { zh: '本店房态', en: 'Room Status' },
+    'admin.today': { zh: '当天', en: 'Today' },
+    'admin.last3days': { zh: '近三天', en: '3 Days' },
+    'admin.last7days': { zh: '近一周', en: '7 Days' },
+    'admin.next7days': { zh: '未来7天', en: 'Next 7 Days' },
+    'admin.next14days': { zh: '未来14天', en: 'Next 14 Days' },
+    'admin.next30days': { zh: '未来30天', en: 'Next 30 Days' },
+    'admin.priceCalendar': { zh: '价格日历', en: 'Price Calendar' },
+    'admin.roomCalendar': { zh: '房态日历', en: 'Room Calendar' },
+    'admin.priceTrend': { zh: '价格趋势', en: 'Price Trend' },
+    'admin.noPriceCalendarData': { zh: '暂无价格日历数据', en: 'No price calendar data' },
+    'admin.noRoomCalendarData': { zh: '暂无房态日历数据', en: 'No room calendar data' },
+    'admin.roomType': { zh: '房型', en: 'Room Type' },
+    'admin.available': { zh: '可用', en: 'Available' },
+    'admin.occupancyRate': { zh: '入住率', en: 'Occ Rate' },
+    'admin.loadingData': { zh: '加载数据中', en: 'Loading data' },
+    'admin.loadFailed': { zh: '加载失败', en: 'Load failed' },
+    'admin.noPublicData': { zh: '暂无公网价格数据', en: 'No public pricing data' },
+    'admin.noCompetitorData': { zh: '暂无竞品价格数据', en: 'No competitor pricing data' },
+    'admin.noBackendData': { zh: '暂无后台价格数据', en: 'No backend pricing data' },
+    'admin.noRoomData': { zh: '暂无房态数据', en: 'No room status data' },
+    'admin.publicPriceTrend': { zh: '公网价格趋势', en: 'Public Price Trend' },
+    'admin.competitorPriceTrend': { zh: '竞品价格趋势', en: 'Competitor Price Trend' },
+    'admin.backendPriceTrend': { zh: '后台价格趋势', en: 'Backend Price Trend' },
+    'admin.price': { zh: '价格 (¥)', en: 'Price (¥)' },
+    'admin.totalRooms': { zh: '总房量', en: 'Total Rooms' },
+    'admin.availableRooms': { zh: '可用房量', en: 'Available' },
+    'admin.occupiedRooms': { zh: '已住房量', en: 'Occupied' },
+    'admin.occupancyRate': { zh: '入住率', en: 'Occupancy' },
+    'admin.realtimeRoomStatus': { zh: '实时房态', en: 'Realtime Room Status' },
+    'admin.latestCrawl': { zh: '最新抓取', en: 'Latest crawl' },
+    'admin.roomCount': { zh: '房间数', en: 'Rooms' },
+    'admin.futureAvailability': { zh: '远期可用房量', en: 'Future Availability' },
+    'admin.availableRoomCount': { zh: '可用房间数', en: 'Available Rooms' },
+    // skill labels
+    'skill.backend-pricing': { zh: '后台价格', en: 'Backend Pricing' },
+    'skill.competitive-intel': { zh: '竞圈信息', en: 'Competitive Intel' },
+    'skill.public-pricing': { zh: '公网价格', en: 'Public Pricing' },
+    'skill.room-status': { zh: '房态查询', en: 'Room Status' },
+    // platform labels
+    'platform.meituan': { zh: '美团', en: 'Meituan' },
+    'platform.ctrip': { zh: '携程', en: 'Ctrip' },
+    'platform.ctrip-public': { zh: '携程公网', en: 'Ctrip Public' },
+    'platform.ctrip-backend': { zh: '携程后台', en: 'Ctrip Backend' },
+    'platform.meituan-backend': { zh: '美团后台', en: 'Meituan Backend' },
+    'platform.meituan-pms': { zh: 'PMS(别样红)', en: 'PMS(BYH)' },
+    'platform.fliggy': { zh: '飞猪', en: 'Fliggy' },
+    'platform.booking': { zh: 'Booking', en: 'Booking' },
+    'platform.booking-public': { zh: 'Booking公网', en: 'Booking Public' },
+    'platform.trip': { zh: 'Trip.com', en: 'Trip.com' },
+    'platform.trip-public': { zh: 'Trip.com公网', en: 'Trip.com Public' },
+    'admin.backendPrice': { zh: '后台价格', en: 'Backend' },
+    'admin.publicPrice': { zh: '公网价格', en: 'Public' },
+    'admin.pmsForecast': { zh: '房态预测', en: 'Room Forecast' },
+    'admin.scheduleConfig': { zh: '调度配置', en: 'Schedule Config' },
+    'admin.scheduleType': { zh: '调度类型', en: 'Schedule Type' },
+    'admin.scheduleInterval': { zh: '间隔模式', en: 'Interval' },
+    'admin.scheduleFixedTime': { zh: '固定时间', en: 'Fixed Time' },
+    'admin.scheduleMinutes': { zh: '分钟', en: 'Minutes' },
+    'admin.scheduleHours': { zh: '小时', en: 'Hours' },
+    'admin.scheduleEvery': { zh: '每', en: 'Every' },
+    'admin.scheduleAddTime': { zh: '添加时间点', en: 'Add Time' },
+    'admin.scheduleRemoveTime': { zh: '删除', en: 'Remove' },
+    'admin.scheduleSave': { zh: '保存调度', en: 'Save Schedule' },
+    'admin.scheduleConfig': { zh: '调度配置', en: 'Schedule Config' },
+    'admin.scheduleUpdated': { zh: '调度已更新', en: 'Schedule updated' },
+    'admin.scheduleUpdateFailed': { zh: '调度更新失败', en: 'Schedule update failed' },
+    'admin.scheduleErrorPositiveInt': { zh: '间隔值必须为正整数', en: 'Interval must be a positive integer' },
+    'admin.scheduleErrorMinutesMax': { zh: '分钟间隔不能超过 59', en: 'Minutes interval cannot exceed 59' },
+    'admin.scheduleErrorHoursMax': { zh: '小时间隔不能超过 23', en: 'Hours interval cannot exceed 23' },
+    'admin.scheduleErrorNoTime': { zh: '至少需要一个时间点', en: 'At least one time point required' },
+    'admin.scheduleErrorInvalidTime': { zh: '无效时间格式', en: 'Invalid time format' },
+    'admin.scheduleErrorDuplicate': { zh: '时间点不能重复', en: 'Duplicate time points not allowed' },
+    'admin.platformLimitReached': { zh: '最多可启用 4 个平台', en: 'Maximum 4 platforms can be enabled' },
+    'admin.platformLimitHint': { zh: '最多可启用 {max} 个平台（已启用 {count}/{max}）', en: 'Up to {max} platforms ({count}/{max} enabled)' },
+  };
+
+  function t(key) {
+    var entry = adminI18n[key];
+    if (!entry) return key;
+    return entry[currentLang] || entry['zh'];
+  }
+
+  // ==================== 状态 ====================
+  let activeMenu = 'hotel-config';
+  let ownHotel = null;       // HotelEntity | null (Memory API, legacy)
+  let hotelConfig = null;    // { hotel_name, address, lat, lng, amap_poi_id } from MySQL
+  let competitors = [];      // competitor_hotels rows from MySQL
+  let nearbyResults = [];    // 周边搜索结果（临时）
+  let nameSearchResults = []; // 名称搜索结果（临时）
+  let canonicalRoomTypes = []; // 用户定义的标准房型名列表
+  let roomMappingData = [];  // 房型映射表数据 [{canonical_name, platform, platform_room_name}]
+  let searchRadius = 3000;   // 默认搜索半径 3km
+  let isSearching = false;   // 周边搜索中标记
+  let isNameSearching = false; // 名称搜索中标记
+  let heartbeatTasks = [];   // HeartbeatTask[]
+  let isLoading = true;
+  let executingTaskIds = new Set();  // 正在爬取的任务 ID
+
+  // ==================== 平台启用数量限制 ====================
+  var MAX_ENABLED_PLATFORMS = 4;
+
+  function getEnabledPlatforms() {
+    var platforms = new Set();
+    for (var i = 0; i < heartbeatTasks.length; i++) {
+      if (heartbeatTasks[i].enabled) {
+        platforms.add(extractPlatform(heartbeatTasks[i].id));
+      }
+    }
+    return platforms;
+  }
+
+  function getEnabledPlatformCount() {
+    return getEnabledPlatforms().size;
+  }
+
+  // skill 名称到标签的映射
+  var skillLabels = {
+    'backend-pricing': t('skill.backend-pricing'),
+    'competitive-intel': t('skill.competitive-intel'),
+    'public-pricing': t('skill.public-pricing'),
+    'room-status': t('skill.room-status')
+  };
+
+  const menuItems = [
+    {
+      id: 'hotel-config',
+      label: t('admin.hotelConfig'),
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>'
+    },
+    {
+      id: 'platform-config',
+      label: t('admin.platformConfig'),
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>'
+    },
+    {
+      id: 'data-dashboard',
+      label: t('admin.dataDashboard'),
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>'
+    },
+    {
+      id: 'quality-tasks',
+      label: t('admin.qualityTasks'),
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>'
+    },
+    {
+      id: 'chat-sessions',
+      label: t('admin.chatSessions'),
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>'
+    }
+  ];
+
+  // ==================== Toast ====================
+  function showToast(msg, type) {
+    type = type || 'success';
+    if (type === 'error') msg = friendlyAdminError(msg);
+    var el = document.createElement('div');
+    el.className = 'toast ' + type;
+    el.textContent = msg;
+    document.body.appendChild(el);
+    requestAnimationFrame(function() { el.classList.add('show'); });
+    setTimeout(function() {
+      el.classList.remove('show');
+      setTimeout(function() { el.remove(); }, 300);
+    }, 2000);
+  }
+
+  function friendlyAdminError(msg) {
+    var s = String(msg || '');
+    if (s.indexOf('ECONNREFUSED') >= 0) return '数据库连接失败，请检查数据库配置';
+    if (s.indexOf('ACCESS_DENIED') >= 0 || s.indexOf('ER_ACCESS_DENIED') >= 0) return '数据库认证失败，请检查用户名密码';
+    if (s.indexOf('ETIMEDOUT') >= 0 || s.indexOf('timeout') >= 0) return '连接超时，请稍后重试';
+    if (s.indexOf('ENOTFOUND') >= 0) return '无法解析服务器地址，请检查网络';
+    if (s.indexOf('ECONNRESET') >= 0) return '连接被重置，请重试';
+    if (s.indexOf('ER_NO_SUCH_TABLE') >= 0) return '数据表不存在，请检查数据库';
+    if (s.indexOf('fetch') >= 0 || s.indexOf('network') >= 0) return '网络请求失败，请检查网络';
+    return s;
+  }
+
+  // ==================== Memory API 封装 ====================
+  console.log('[hotel-admin] window.electronAPI:', typeof window.electronAPI, window.electronAPI);
+  console.log('[hotel-admin] window.electronAPI?.memory:', window.electronAPI && window.electronAPI.memory);
+  var api = window.electronAPI && window.electronAPI.memory;
+  var heartbeatApi = window.electronAPI && window.electronAPI.heartbeat;
+  var hotelConfigApi = window.electronAPI && window.electronAPI.hotelConfig;
+  var roomTypesApi = window.electronAPI && window.electronAPI.roomTypes;
+  var competitorApi = window.electronAPI && window.electronAPI.competitor;
+
+  async function loadData() {
+    // 从 MySQL 加载本店配置 + 竞品列表（按 user_id 隔离）
+    if (hotelConfigApi) {
+      try {
+        hotelConfig = await hotelConfigApi.get();
+      } catch (e) {
+        console.error('加载本店配置失败:', e);
+      }
+    }
+    // Memory API 加载旧数据（仅作为只读参考，不自动迁移，避免跨用户数据泄漏）
+    if (api) {
+      try {
+        var ownResult = await api.retrieve({ type: 'own_hotel', limit: 1 });
+        if (ownResult.success && ownResult.data && ownResult.data.length > 0) {
+          ownHotel = ownResult.data[0];
+        }
+      } catch (e) {
+        console.error('加载Memory数据失败:', e);
+      }
+    }
+    if (competitorApi) {
+      try {
+        competitors = await competitorApi.list();
+      } catch (e) {
+        console.error('加载竞品列表失败:', e);
+      }
+    }
+    if (roomTypesApi) {
+      try {
+        canonicalRoomTypes = await roomTypesApi.list();
+      } catch (e) {
+        console.error('加载标准房型失败:', e);
+      }
+      try {
+        roomMappingData = await roomTypesApi.getMappings();
+      } catch (e) {
+        console.error('加载房型映射失败:', e);
+      }
+    }
+    // 加载心跳任务
+    if (heartbeatApi) {
+      try {
+        heartbeatTasks = await heartbeatApi.getTasks();
+      } catch (e) {
+        console.error('加载心跳任务失败:', e);
+      }
+      // 获取当前正在执行的任务
+      try {
+        var executing = await heartbeatApi.getExecutingTasks();
+        executingTaskIds = new Set(executing);
+      } catch (e) {
+        console.error('获取执行状态失败:', e);
+      }
+    }
+    isLoading = false;
+    renderContent();
+  }
+
+  // ==================== 任务执行状态实时监听 ====================
+  if (heartbeatApi && heartbeatApi.onTaskStatus) {
+    heartbeatApi.onTaskStatus(function(data) {
+      if (data.status === 'running') {
+        executingTaskIds.add(data.taskId);
+      } else {
+        executingTaskIds.delete(data.taskId);
+      }
+      // 只更新指示器，不重新渲染整个页面
+      updateCrawlingIndicators();
+    });
+  }
+
+  function updateCrawlingIndicators() {
+    for (var i = 0; i < heartbeatTasks.length; i++) {
+      var taskId = heartbeatTasks[i].id;
+      var el = document.getElementById('crawl-status-' + taskId);
+      if (el) {
+        if (executingTaskIds.has(taskId)) {
+          el.style.display = 'inline-flex';
+        } else {
+          el.style.display = 'none';
+        }
+      }
+    }
+  }
+
+  // ==================== 本店操作 ====================
+  async function saveOwnHotel() {
+    var input = document.getElementById('ownHotelName');
+    var name = input ? input.value.trim() : '';
+    if (!name) { showToast(t('admin.enterHotelName'), 'error'); return; }
+
+    try {
+      // 保存到 MySQL（按 user_id 隔离）
+      await hotelConfigApi.save({ hotelName: name });
+      hotelConfig = await hotelConfigApi.get();
+      showToast(t('admin.ownSaved'));
+      renderContent();
+    } catch (e) { showToast(t('admin.saveFailed') + ': ' + e.message, 'error'); }
+  }
+
+  // 自动解析本店位置
+  async function resolveOwnLocation() {
+    var name = hotelConfig && hotelConfig.hotel_name;
+    if (!name) { showToast('请先保存酒店名称', 'error'); return; }
+
+    var btn = document.getElementById('btnResolveLocation');
+    if (btn) { btn.disabled = true; btn.textContent = '定位中...'; }
+
+    try {
+      var loc = await competitorApi.resolveLocation(name);
+      if (loc) {
+        await hotelConfigApi.save({ address: loc.address, lat: loc.lat, lng: loc.lng, amapPoiId: loc.amapPoiId || null });
+        hotelConfig = await hotelConfigApi.get();
+        showToast('定位成功：' + loc.address);
+        renderContent();
+      } else {
+        showToast('未找到该酒店位置，请检查名称', 'error');
+      }
+    } catch (e) {
+      showToast('定位失败: ' + e.message, 'error');
+    } finally {
+      if (btn) { btn.disabled = false; btn.textContent = '自动定位'; }
+    }
+  }
+
+  // ==================== 竞品操作 ====================
+
+  // 搜索周边酒店
+  async function searchNearby() {
+    if (!hotelConfig || !hotelConfig.lat || !hotelConfig.lng) {
+      showToast('请先定位本店位置', 'error');
+      return;
+    }
+
+    var radiusSelect = document.getElementById('searchRadius');
+    if (radiusSelect) searchRadius = parseInt(radiusSelect.value);
+
+    isSearching = true;
+    renderSearchResults();
+
+    try {
+      nearbyResults = await competitorApi.searchNearby(hotelConfig.lat, hotelConfig.lng, searchRadius);
+      // 过滤掉本店自身（通过 amap_poi_id 或名称匹配）
+      nearbyResults = nearbyResults.filter(function(h) {
+        if (hotelConfig.amap_poi_id && h.amapPoiId === hotelConfig.amap_poi_id) return false;
+        if (h.name === hotelConfig.hotel_name) return false;
+        return true;
+      });
+      // 标记已添加的竞品
+      var addedPoiIds = new Set(competitors.map(function(c) { return c.amap_poi_id; }).filter(Boolean));
+      var addedNames = new Set(competitors.map(function(c) { return c.name; }));
+      nearbyResults.forEach(function(h) {
+        h._added = addedPoiIds.has(h.amapPoiId) || addedNames.has(h.name);
+      });
+    } catch (e) {
+      showToast('搜索失败: ' + e.message, 'error');
+      nearbyResults = [];
+    }
+
+    isSearching = false;
+    renderSearchResults();
+  }
+
+  // 添加选中的竞品
+  async function addSelectedCompetitors() {
+    var checkboxes = document.querySelectorAll('.nearby-checkbox:checked');
+    if (checkboxes.length === 0) { showToast('请先勾选要添加的竞品', 'error'); return; }
+
+    var added = 0;
+    for (var i = 0; i < checkboxes.length; i++) {
+      var idx = parseInt(checkboxes[i].dataset.idx);
+      var h = nearbyResults[idx];
+      if (!h || h._added) continue;
+      try {
+        await competitorApi.add({
+          name: h.name,
+          amapPoiId: h.amapPoiId,
+          address: h.address,
+          lat: h.lat,
+          lng: h.lng,
+          distanceMeters: h.distance
+        });
+        h._added = true;
+        added++;
+      } catch (e) {
+        console.error('添加竞品失败:', h.name, e);
+      }
+    }
+
+    if (added > 0) {
+      competitors = await competitorApi.list();
+      showToast('已添加 ' + added + ' 家竞品，正在后台解析平台ID...');
+      renderSearchResults();
+      renderCompetitorList();
+
+      // 自动触发竞品平台ID解析（后台异步执行）
+      try {
+        await competitorApi.resolvePlatformIds();
+      } catch (e) {
+        console.warn('触发平台ID解析失败:', e);
+      }
+    }
+  }
+
+  async function removeCompetitor(id, name) {
+    if (!confirm(t('admin.confirmDelete') + '「' + name + '」？')) return;
+    try {
+      await competitorApi.remove(id);
+      competitors = await competitorApi.list();
+      showToast(t('admin.deleted'));
+      // 更新搜索结果中的已添加标记
+      var addedPoiIds = new Set(competitors.map(function(c) { return c.amap_poi_id; }).filter(Boolean));
+      nearbyResults.forEach(function(h) {
+        h._added = addedPoiIds.has(h.amapPoiId);
+      });
+      nameSearchResults.forEach(function(h) {
+        h._added = addedPoiIds.has(h.amapPoiId);
+      });
+      renderContent();
+    } catch (e) { showToast(t('admin.deleteFailed') + ': ' + e.message, 'error'); }
+  }
+
+  // ==================== 名称搜索竞品 ====================
+
+  async function searchByName() {
+    var input = document.getElementById('nameSearchInput');
+    var keyword = input && input.value.trim();
+    if (!keyword) { showToast('请输入酒店名称', 'error'); return; }
+
+    isNameSearching = true;
+    renderNameSearchResults();
+
+    try {
+      nameSearchResults = await competitorApi.searchByName(keyword);
+      // 标记已添加的竞品
+      var addedPoiIds = new Set(competitors.map(function(c) { return c.amap_poi_id; }).filter(Boolean));
+      var addedNames = new Set(competitors.map(function(c) { return c.name; }));
+      nameSearchResults.forEach(function(h) {
+        h._added = addedPoiIds.has(h.amapPoiId) || addedNames.has(h.name);
+      });
+    } catch (e) {
+      showToast('搜索失败: ' + e.message, 'error');
+      nameSearchResults = [];
+    }
+
+    isNameSearching = false;
+    renderNameSearchResults();
+  }
+
+  async function addNameSearchCompetitor(idx) {
+    var h = nameSearchResults[idx];
+    if (!h || h._added) return;
+
+    try {
+      await competitorApi.add({
+        name: h.name,
+        amapPoiId: h.amapPoiId,
+        address: h.address,
+        lat: h.lat,
+        lng: h.lng
+      });
+      h._added = true;
+      competitors = await competitorApi.list();
+      showToast('已添加竞品：' + h.name);
+      renderNameSearchResults();
+      renderCompetitorList();
+
+      // 后台异步解析平台ID
+      try { await competitorApi.resolvePlatformIds(); } catch (e) {}
+    } catch (e) {
+      showToast('添加失败: ' + e.message, 'error');
+    }
+  }
+
+  function renderNameSearchResults() {
+    var el = document.getElementById('nameSearchResultsContainer');
+    if (!el) return;
+
+    if (isNameSearching) {
+      el.innerHTML = '<div class="search-loading"><div class="spinner-small"></div> 正在搜索...</div>';
+      return;
+    }
+
+    if (nameSearchResults.length === 0) {
+      el.innerHTML = '';
+      return;
+    }
+
+    var html = '<div class="nearby-header">';
+    html += '<span style="color:#666;font-size:13px;">找到 ' + nameSearchResults.length + ' 家酒店</span>';
+    html += '</div>';
+
+    html += '<div class="nearby-list">';
+    for (var i = 0; i < nameSearchResults.length; i++) {
+      var h = nameSearchResults[i];
+      var isAdded = h._added;
+
+      html += '<div class="nearby-item' + (isAdded ? ' added' : '') + '">';
+      html += '<div class="nearby-info">';
+      html += '<span class="nearby-name">' + escapeHtml(h.name) + '</span>';
+      html += '<span class="nearby-meta">';
+      if (h.address) html += escapeHtml(h.address);
+      html += '</span>';
+      html += '</div>';
+      if (isAdded) {
+        html += '<span class="nearby-tag added-tag">已添加</span>';
+      } else {
+        html += '<button class="btn btn-primary btn-sm" onclick="addNameSearchCompetitor(' + i + ')">添加</button>';
+      }
+      html += '</div>';
+    }
+    html += '</div>';
+
+    el.innerHTML = html;
+  }
+
+  // ==================== 渲染 ====================
+  function renderMenu() {
+    var nav = document.getElementById('sidebarMenu');
+    nav.innerHTML = menuItems.map(function(item) {
+      return '<button class="menu-item' + (item.id === activeMenu ? ' active' : '') +
+        '" data-id="' + item.id + '">' + item.icon + '<span>' + item.label + '</span></button>';
+    }).join('');
+    nav.querySelectorAll('.menu-item').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        if (btn.dataset.id === 'quality-tasks') {
+          openQualityAdmin();
+          return;
+        }
+        activeMenu = btn.dataset.id;
+        renderMenu();
+        renderContent();
+      });
+    });
+  }
+
+  async function openQualityAdmin() {
+    try {
+      var pagesPath = await window.electronAPI.app.getPagesPath();
+      await window.electronAPI.tabs.create(pagesPath + '/quality/quality-admin.html');
+    } catch (e) {
+      showToast('打开质检任务失败: ' + e.message, 'error');
+    }
+  }
+  function renderContent() {
+    var header = document.getElementById('mainHeader');
+    var content = document.getElementById('mainContent');
+    var item = menuItems.find(function(m) { return m.id === activeMenu; });
+    header.textContent = item ? item.label : '';
+
+    if (isLoading) {
+      content.innerHTML = '<div class="loading">' + t('admin.loading') + '</div>';
+      return;
+    }
+
+    if (!api && !hotelConfigApi && !competitorApi) {
+      content.innerHTML = '<div class="content-card"><div class="empty-state">' +
+        '<div class="icon">⚠️</div><p>' + t('admin.apiUnavailable') + '</p></div></div>';
+      return;
+    }
+
+    if (activeMenu === 'hotel-config') {
+      renderHotelConfig(content);
+    } else if (activeMenu === 'platform-config') {
+      renderPlatformConfig(content);
+    } else if (activeMenu === 'data-dashboard') {
+      renderDashboard(content);
+    } else if (activeMenu === 'chat-sessions') {
+      renderChatSessions(content);
+    }
+  }
+
+  function renderHotelConfig(container) {
+    var hotelName = (hotelConfig && hotelConfig.hotel_name) || '';
+    var hasLocation = hotelConfig && hotelConfig.lat && hotelConfig.lng;
+    var locationText = hasLocation
+      ? (hotelConfig.address || (hotelConfig.lat + ', ' + hotelConfig.lng))
+      : '';
+
+    var ownBadge = hotelName
+      ? '<span class="badge">' + t('admin.configured') + '</span>'
+      : '<span class="badge empty">' + t('admin.notConfigured') + '</span>';
+    var compBadge = competitors.length > 0
+      ? '<span class="badge">' + competitors.length + (currentLang === 'zh' ? ' 家' : '') + '</span>'
+      : '<span class="badge empty">' + t('admin.notConfigured') + '</span>';
+
+    var html = '';
+
+    // ─── 本店信息卡片 ───
+    html += '<div class="content-card">';
+    html += '<h3>' + t('admin.ownHotel') + ' ' + ownBadge + '</h3>';
+    html += '<div class="form-row">';
+    html += '<span class="form-label">' + t('admin.hotelName') + '</span>';
+    html += '<input type="text" class="form-input" id="ownHotelName" placeholder="' + t('admin.ownHotelPlaceholder') + '"';
+    html += ' value="' + escapeHtml(hotelName) + '"';
+    html += ' onkeydown="if(event.key===\'Enter\')saveOwnHotel()">';
+    html += '<button class="btn btn-primary" onclick="saveOwnHotel()">' + t('admin.save') + '</button>';
+    html += '</div>';
+
+    // 位置信息行
+    html += '<div class="form-row" style="margin-top:10px;">';
+    html += '<span class="form-label">位置</span>';
+    if (hasLocation) {
+      html += '<span class="location-text" style="flex:1;color:#52c41a;font-size:13px;">';
+      html += '📍 ' + escapeHtml(locationText);
+      html += '</span>';
+      html += '<button class="btn btn-default btn-sm" id="btnResolveLocation" onclick="resolveOwnLocation()">重新定位</button>';
+    } else {
+      html += '<span class="location-text" style="flex:1;color:#999;font-size:13px;">未定位</span>';
+      html += '<button class="btn btn-primary btn-sm" id="btnResolveLocation" onclick="resolveOwnLocation()"' +
+        (hotelName ? '' : ' disabled title="请先保存���店名称"') + '>自动定位</button>';
+    }
+    html += '</div>';
+    html += '</div>';
+
+    // ─── 房型映射管理卡片 ───
+    html += '<div class="content-card">';
+    html += '<h3>房型映射管理</h3>';
+    html += '<p style="color:#888;font-size:12px;margin:0 0 12px;">配置各平台房型名称与统一名称的对应关系，确保数据面板展示一致</p>';
+    html += '<div id="roomMappingTableContainer"></div>';
+    html += '</div>';
+
+    // ─── 竞品发现卡片 ───
+    html += '<div class="content-card">';
+    html += '<h3>竞品发现</h3>';
+    if (!hasLocation) {
+      html += '<div class="empty-state"><div class="icon">📍</div><p>请先保存酒店名称并完成自动定位，即可搜索周边竞品酒店</p></div>';
+    } else {
+      html += '<div class="form-row">';
+      html += '<span class="form-label">搜索半径</span>';
+      html += '<select class="form-input" id="searchRadius" style="max-width:140px;">';
+      html += '<option value="1000"' + (searchRadius === 1000 ? ' selected' : '') + '>1 公里</option>';
+      html += '<option value="2000"' + (searchRadius === 2000 ? ' selected' : '') + '>2 公里</option>';
+      html += '<option value="3000"' + (searchRadius === 3000 ? ' selected' : '') + '>3 公里</option>';
+      html += '<option value="5000"' + (searchRadius === 5000 ? ' selected' : '') + '>5 公里</option>';
+      html += '</select>';
+      html += '<button class="btn btn-primary" onclick="searchNearby()">搜索周边酒店</button>';
+      html += '</div>';
+
+      // 搜索结果容器
+      html += '<div id="nearbyResultsContainer">';
+      html += '</div>';
+    }
+
+    // 名称搜索（不依赖定位，独立功能）
+    html += '<div style="border-top:1px solid #f0f0f0;margin-top:16px;padding-top:16px;">';
+    html += '<div class="form-row">';
+    html += '<span class="form-label">搜索酒店</span>';
+    html += '<input type="text" class="form-input" id="nameSearchInput" placeholder="输入酒店名称搜索"';
+    html += ' onkeydown="if(event.key===\'Enter\')searchByName()">';
+    html += '<button class="btn btn-primary" onclick="searchByName()">搜索</button>';
+    html += '</div>';
+    html += '<div id="nameSearchResultsContainer"></div>';
+    html += '</div>';
+
+    html += '</div>';
+
+    // ─── 已添加竞品列表 ───
+    html += '<div class="content-card">';
+    html += '<h3>' + t('admin.competitors') + ' ' + compBadge + '</h3>';
+    html += '<div id="competitorListContainer">';
+    html += '</div>';
+    html += '</div>';
+
+    container.innerHTML = html;
+
+    // 渲染动态子区域
+    renderRoomMappingTable();
+    renderSearchResults();
+    renderNameSearchResults();
+    renderCompetitorList();
+  }
+
+  // ─── 房型映射表格 ───
+  var PLATFORMS = ['ctrip', 'meituan', 'trip', 'booking'];
+  var PLATFORM_LABELS = { ctrip: '携程', meituan: '美团', trip: 'Trip.com', booking: 'Booking' };
+
+  function buildMappingRows() {
+    // 从 canonicalRoomTypes + roomMappingData 构建表格行数据
+    var rows = [];
+    for (var i = 0; i < canonicalRoomTypes.length; i++) {
+      var name = canonicalRoomTypes[i];
+      var row = { canonicalName: name };
+      for (var j = 0; j < PLATFORMS.length; j++) {
+        var p = PLATFORMS[j];
+        // 查找该统一名称在该平台的映射（platform 可能是 ctrip-public/ctrip-backend，统一匹配前缀）
+        var found = roomMappingData.find(function(m) {
+          return m.canonical_name === name && (m.platform === p || m.platform.startsWith(p + '-'));
+        });
+        row[p] = found ? found.platform_room_name : '';
+      }
+      rows.push(row);
+    }
+    return rows;
+  }
+
+  function renderRoomMappingTable() {
+    var el = document.getElementById('roomMappingTableContainer');
+    if (!el) return;
+
+    var rows = buildMappingRows();
+
+    var html = '';
+    // 添加房型按钮
+    html += '<div style="display:flex;gap:8px;margin-bottom:12px;">';
+    html += '<input type="text" class="form-input" id="newRoomTypeName" placeholder="输入统一房型名称，如：豪华大床房" style="flex:1;"';
+    html += ' onkeydown="if(event.key===\'Enter\')addMappingRow()">';
+    html += '<button class="btn btn-primary" onclick="addMappingRow()">添加房型</button>';
+    html += '</div>';
+
+    if (rows.length === 0) {
+      html += '<div style="color:#999;font-size:13px;padding:12px 0;">暂未配置房型，请先添加统一房型名称</div>';
+      el.innerHTML = html;
+      return;
+    }
+
+    // 表格
+    html += '<div style="overflow-x:auto;">';
+    html += '<table style="width:100%;border-collapse:collapse;font-size:13px;">';
+    html += '<thead><tr style="background:#f8f9fa;">';
+    html += '<th style="padding:8px 10px;text-align:left;border-bottom:2px solid #e8e8e8;white-space:nowrap;">统一名称</th>';
+    for (var j = 0; j < PLATFORMS.length; j++) {
+      html += '<th style="padding:8px 10px;text-align:left;border-bottom:2px solid #e8e8e8;white-space:nowrap;">' + PLATFORM_LABELS[PLATFORMS[j]] + '</th>';
+    }
+    html += '<th style="padding:8px 10px;border-bottom:2px solid #e8e8e8;width:40px;"></th>';
+    html += '</tr></thead><tbody>';
+
+    for (var i = 0; i < rows.length; i++) {
+      var row = rows[i];
+      html += '<tr style="border-bottom:1px solid #f0f0f0;">';
+      html += '<td style="padding:6px 10px;font-weight:500;color:#1890ff;white-space:nowrap;">' + escapeHtml(row.canonicalName) + '</td>';
+      for (var j = 0; j < PLATFORMS.length; j++) {
+        var p = PLATFORMS[j];
+        var val = row[p] || '';
+        html += '<td style="padding:4px 6px;">';
+        html += '<input type="text" class="form-input mapping-input" data-row="' + i + '" data-platform="' + p + '"';
+        html += ' value="' + escapeHtml(val) + '" placeholder="' + PLATFORM_LABELS[p] + '房型名"';
+        html += ' style="width:100%;padding:4px 8px;font-size:12px;border:1px solid #d9d9d9;border-radius:3px;">';
+        html += '</td>';
+      }
+      html += '<td style="padding:4px 6px;text-align:center;">';
+      html += '<span style="cursor:pointer;color:#ff4d4f;font-size:16px;" onclick="removeMappingRow(\'' + escapeHtml(row.canonicalName).replace(/'/g, "\\'") + '\')" title="删除该房型">×</span>';
+      html += '</td>';
+      html += '</tr>';
+    }
+
+    html += '</tbody></table></div>';
+
+    // 保存按钮
+    html += '<div style="margin-top:12px;text-align:right;">';
+    html += '<button class="btn btn-primary" onclick="saveMappingTable()">保存映射</button>';
+    html += '</div>';
+
+    el.innerHTML = html;
+  }
+
+  async function addMappingRow() {
+    var input = document.getElementById('newRoomTypeName');
+    var name = input && input.value.trim();
+    if (!name) { showToast('请输入统一房型名称', 'error'); return; }
+    if (canonicalRoomTypes.includes(name)) { showToast('该房型已存在', 'error'); return; }
+    if (!roomTypesApi) { showToast('API 不可用', 'error'); return; }
+
+    try {
+      await roomTypesApi.add(name);
+      canonicalRoomTypes.push(name);
+      input.value = '';
+      renderRoomMappingTable();
+      showToast('已添加：' + name);
+    } catch (e) {
+      showToast('添加失败：' + e.message, 'error');
+    }
+  }
+
+  async function removeMappingRow(name) {
+    if (!roomTypesApi) return;
+    try {
+      await roomTypesApi.remove(name);
+      canonicalRoomTypes = canonicalRoomTypes.filter(function(n) { return n !== name; });
+      roomMappingData = roomMappingData.filter(function(m) { return m.canonical_name !== name; });
+      renderRoomMappingTable();
+      showToast('已删除：' + name);
+    } catch (e) {
+      showToast('删除失败：' + e.message, 'error');
+    }
+  }
+
+  async function saveMappingTable() {
+    if (!roomTypesApi) { showToast('API 不可用', 'error'); return; }
+
+    // 从表格 input 中收集所有映射
+    var inputs = document.querySelectorAll('.mapping-input');
+    var mappings = [];
+    var rows = buildMappingRows();
+
+    for (var k = 0; k < inputs.length; k++) {
+      var inp = inputs[k];
+      var rowIdx = parseInt(inp.getAttribute('data-row'));
+      var platform = inp.getAttribute('data-platform');
+      var val = inp.value.trim();
+      if (val && rows[rowIdx]) {
+        mappings.push({
+          canonicalName: rows[rowIdx].canonicalName,
+          platform: platform,
+          platformRoomName: val
+        });
+      }
+    }
+
+    try {
+      await roomTypesApi.saveMappings(mappings);
+      // 更新本地状态
+      roomMappingData = mappings.map(function(m) {
+        return { canonical_name: m.canonicalName, platform: m.platform, platform_room_name: m.platformRoomName };
+      });
+      showToast('映射已保存（' + mappings.length + ' 条）');
+    } catch (e) {
+      showToast('保存失败：' + e.message, 'error');
+    }
+  }
+
+  function renderSearchResults() {
+    var el = document.getElementById('nearbyResultsContainer');
+    if (!el) return;
+
+    if (isSearching) {
+      el.innerHTML = '<div class="search-loading"><div class="spinner-small"></div> 正在搜索周边酒店...</div>';
+      return;
+    }
+
+    if (nearbyResults.length === 0) {
+      el.innerHTML = '';
+      return;
+    }
+
+    var html = '<div class="nearby-header">';
+    html += '<span style="color:#666;font-size:13px;">找到 ' + nearbyResults.length + ' 家酒店</span>';
+    html += '<button class="btn btn-primary btn-sm" onclick="addSelectedCompetitors()">添加选中为竞品</button>';
+    html += '</div>';
+
+    html += '<div class="nearby-list">';
+    for (var i = 0; i < nearbyResults.length; i++) {
+      var h = nearbyResults[i];
+      var distText = h.distance < 1000 ? (h.distance + 'm') : ((h.distance / 1000).toFixed(1) + 'km');
+      var isAdded = h._added;
+
+      html += '<label class="nearby-item' + (isAdded ? ' added' : '') + '">';
+      html += '<input type="checkbox" class="nearby-checkbox" data-idx="' + i + '"' +
+        (isAdded ? ' disabled checked' : '') + '>';
+      html += '<div class="nearby-info">';
+      html += '<span class="nearby-name">' + escapeHtml(h.name) + '</span>';
+      html += '<span class="nearby-meta">' + distText;
+      if (h.address) html += ' · ' + escapeHtml(h.address);
+      html += '</span>';
+      html += '</div>';
+      if (isAdded) {
+        html += '<span class="nearby-tag added-tag">已添加</span>';
+      } else {
+        html += '<span class="nearby-tag dist-tag">' + distText + '</span>';
+      }
+      html += '</label>';
+    }
+    html += '</div>';
+
+    el.innerHTML = html;
+  }
+
+  function renderCompetitorList() {
+    var el = document.getElementById('competitorListContainer');
+    if (!el) return;
+
+    if (competitors.length === 0) {
+      el.innerHTML = '<div class="empty-state"><div class="icon">📋</div><p>' + t('admin.noCompetitors') + '</p></div>';
+      return;
+    }
+
+    var html = '';
+    for (var i = 0; i < competitors.length; i++) {
+      var c = competitors[i];
+      var distText = c.distance_meters
+        ? (c.distance_meters < 1000 ? (c.distance_meters + 'm') : ((c.distance_meters / 1000).toFixed(1) + 'km'))
+        : '';
+
+      // 解析 platform_ids: "ctrip:123578036:桔子水晶酒店||trip:123578036:桔子水晶酒店"
+      var platformInfo = [];
+      if (c.platform_ids) {
+        var parts = c.platform_ids.split('||');
+        for (var j = 0; j < parts.length; j++) {
+          var segs = parts[j].split(':');
+          if (segs[0] && segs[1]) {
+            platformInfo.push({ platform: segs[0], hotelId: segs[1], name: segs[2] || '' });
+          }
+        }
+      }
+
+      html += '<div class="competitor-item">';
+      html += '<div style="flex:1;min-width:0;">';
+      html += '<span class="name">' + escapeHtml(c.name) + '</span>';
+      if (distText) html += '<span class="comp-dist">' + distText + '</span>';
+      if (c.address) html += '<div class="comp-address">' + escapeHtml(c.address) + '</div>';
+
+      // 显示平台ID解析状态
+      if (platformInfo.length > 0) {
+        html += '<div style="margin-top:4px;font-size:11px;">';
+        var shown = {};
+        for (var k = 0; k < platformInfo.length; k++) {
+          var p = platformInfo[k];
+          if (shown[p.platform]) continue;
+          shown[p.platform] = true;
+          html += '<span style="color:#52c41a;margin-right:8px;">✅ ' + p.platform + ' (' + p.hotelId + ')</span>';
+        }
+        html += '</div>';
+      } else {
+        html += '<div style="margin-top:4px;font-size:11px;color:#faad14;">⏳ 平台ID待解析</div>';
+      }
+
+      html += '</div>';
+      html += '<div class="actions">';
+      html += '<button class="btn btn-danger btn-sm" onclick="removeCompetitor(' +
+        c.id + ',\'' + escapeHtml(c.name).replace(/'/g, "\\'") + '\')">' + t('admin.delete') + '</button>';
+      html += '</div></div>';
+    }
+    el.innerHTML = html;
+  }
+
+  // ==================== 数据渠道配置（心跳任务直控） ====================
+
+  // 平台名称映射
+  var platformLabels = {
+    'meituan': t('platform.meituan'),
+    'ctrip': t('platform.ctrip'),
+    'ctrip-public': t('platform.ctrip-public'),
+    'ctrip-backend': t('platform.ctrip-backend'),
+    'meituan-backend': t('platform.meituan-backend'),
+    'meituan-pms': t('platform.meituan-pms'),
+    'booking': t('platform.booking'),
+    'booking-public': t('platform.booking-public'),
+    'trip': t('platform.trip'),
+    'trip-public': t('platform.trip-public')
+  };
+
+  // Dashboard tab → DB platform values 映射
+  // 每个 tab 对应哪些 DB 里的 platform 值
+  var TAB_PLATFORMS = {
+    'all':     null, // 全部，不过滤
+    'ctrip':   ['ctrip-backend', 'ctrip-public', 'trip-public'],
+    'meituan': ['meituan-backend'],
+    'pms':     ['meituan-pms'],
+    'booking': ['booking-public']  // 未来加 booking-backend
+  };
+
+  // 各 tab 内 sub-row 显示的简短标签（同一 tab 内区分数据来源）
+  var PLATFORM_SHORT_LABEL = {
+    'ctrip-backend': t('admin.backendPrice'),
+    'ctrip-public':  t('platform.ctrip-public'),
+    'trip-public':   t('platform.trip-public'),
+    'meituan-backend': t('admin.backendPrice'),
+    'meituan-pms':   t('platform.meituan-pms'),
+    'booking-public': t('admin.publicPrice')
+  };
+
+  // 各 tab 显示哪些面板
+  var TAB_PANELS = {
+    'all':     { priceCalendar: true,  roomCalendar: true,  trend: true  },
+    'ctrip':   { priceCalendar: true,  roomCalendar: false, trend: true  },
+    'meituan': { priceCalendar: true,  roomCalendar: false, trend: true  },
+    'pms':     { priceCalendar: false, roomCalendar: true,  trend: false },
+    'booking': { priceCalendar: true,  roomCalendar: false, trend: true  }
+  };
+
+  function filterByTab(dataArr, tab) {
+    var plats = TAB_PLATFORMS[tab];
+    if (!plats) return dataArr; // 'all'
+    return dataArr.filter(function(d) {
+      return plats.indexOf(d.platform) !== -1;
+    });
+  }
+
+  // 从任务 ID 提取平台 key（最后一段）
+  function extractPlatform(taskId) {
+    var parts = taskId.split('-');
+    return parts[parts.length - 1];
+  }
+
+  function renderPlatformConfig(container) {
+    if (!heartbeatTasks || heartbeatTasks.length === 0) {
+      container.innerHTML = '<div class="content-card"><div class="empty-state">' +
+        '<div class="icon">📋</div><p>' + t('admin.noChannels') + '</p></div></div>';
+      return;
+    }
+
+    // 按平台分组
+    var platformMap = {};
+    for (var i = 0; i < heartbeatTasks.length; i++) {
+      var task = heartbeatTasks[i];
+      var pKey = extractPlatform(task.id);
+      if (!platformMap[pKey]) platformMap[pKey] = [];
+      platformMap[pKey].push(task);
+    }
+
+    var enabledCount = heartbeatTasks.filter(function(t) { return t.enabled; }).length;
+    var enabledPlatforms = getEnabledPlatforms();
+    var atLimit = enabledPlatforms.size >= MAX_ENABLED_PLATFORMS;
+
+    var html = '<div class="content-card">';
+    html += '<h3>' + t('admin.channelConfig') + ' <span class="badge">' + enabledCount + '/' + heartbeatTasks.length + ' ' + t('admin.enabled') + '</span></h3>';
+    html += '<p style="color:#999;font-size:13px;margin-bottom:16px;">' + t('admin.channelHint') + '</p>';
+    html += '<p style="color:#faad14;font-size:13px;margin-bottom:16px;">' + t('admin.platformLimitHint').replace('{count}', enabledPlatforms.size).replace('{max}', MAX_ENABLED_PLATFORMS) + '</p>';
+
+    var platformKeys = Object.keys(platformMap);
+    for (var p = 0; p < platformKeys.length; p++) {
+      var pKey = platformKeys[p];
+      var tasks = platformMap[pKey];
+      var pLabel = platformLabels[pKey] || pKey;
+      var pEnabledCount = tasks.filter(function(t) { return t.enabled; }).length;
+      var allEnabled = pEnabledCount === tasks.length;
+      var noneEnabled = pEnabledCount === 0;
+      var statusClass = noneEnabled ? 'off' : 'on';
+      var statusText = allEnabled ? t('admin.allEnabled') : (noneEnabled ? t('admin.disabled') : pEnabledCount + '/' + tasks.length + ' ' + t('admin.enabled'));
+
+      html += '<div class="platform-card' + (noneEnabled ? ' disabled' : '') + '">';
+      html += '<div class="platform-card-header">';
+      html += '<div>';
+      html += '<span class="platform-name">' + escapeHtml(pLabel) + '</span>';
+      html += '<span class="platform-status ' + statusClass + '">' + escapeHtml(statusText) + '</span>';
+      html += '</div>';
+      html += '</div>';
+
+      // 每个 skill 一行开关
+      for (var s = 0; s < tasks.length; s++) {
+        var task = tasks[s];
+        var sLabel = skillLabels[task.skill] || task.skill;
+        var isCrawling = executingTaskIds.has(task.id);
+        html += '<div class="skill-row">';
+        html += '<div style="display:flex;align-items:center;gap:6px;"><span class="skill-label">' + escapeHtml(sLabel) + '</span>';
+        html += '<span class="crawling-indicator" id="crawl-status-' + task.id + '" style="display:' + (isCrawling ? 'inline-flex' : 'none') + '"><span class="dot"></span>获取中</span>';
+        html += '</div>';
+        html += '<div style="display:flex;align-items:center;gap:8px;">';
+        html += '<button class="schedule-toggle-btn" onclick="toggleScheduleEditor(\'' + task.id + '\')">';
+        html += '<span class="arrow" id="schedule-arrow-' + task.id + '">&#9654;</span>';
+        html += t('admin.scheduleConfig');
+        html += '</button>';
+        var platformEnabled = enabledPlatforms.has(pKey);
+        var shouldDisable = !task.enabled && atLimit && !platformEnabled;
+        html += '<label class="switch"><input type="checkbox"' + (task.enabled ? ' checked' : '') +
+          (shouldDisable ? ' disabled' : '') +
+          ' onchange="toggleTask(\'' + task.id + '\', this.checked)"><span class="slider"></span></label>';
+        html += '</div>';
+        html += '</div>';
+        // Schedule editor (collapsible, below the row)
+        html += renderScheduleEditor(task);
+      }
+
+      html += '</div>';
+    }
+
+    html += '</div>';
+    container.innerHTML = html;
+  }
+
+  async function toggleTask(taskId, enabled) {
+    if (!heartbeatApi) return;
+
+    // 启用时检查平台限制
+    if (enabled) {
+      var targetPlatform = extractPlatform(taskId);
+      var enabledPlatforms = getEnabledPlatforms();
+      if (!enabledPlatforms.has(targetPlatform) && enabledPlatforms.size >= MAX_ENABLED_PLATFORMS) {
+        showToast(t('admin.platformLimitReached'), 'error');
+        renderContent();
+        return;
+      }
+    }
+
+    try {
+      await heartbeatApi.updateTask(taskId, { enabled: enabled });
+      // 更新本地状态
+      for (var i = 0; i < heartbeatTasks.length; i++) {
+        if (heartbeatTasks[i].id === taskId) {
+          heartbeatTasks[i].enabled = enabled;
+          break;
+        }
+      }
+      showToast(enabled ? t('admin.enabled') : t('admin.disabled'));
+      renderContent();
+    } catch (e) {
+      showToast(t('admin.operationFailed') + ': ' + e.message, 'error');
+    }
+  }
+
+  function escapeHtml(str) {
+    var div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  // ==================== 调度配置纯函数 ====================
+
+  function renderScheduleEditor(task) {
+    var parsed = parseScheduleFromTask(task);
+    var sType = parsed.scheduleType || 'interval';
+    var sConfig = parsed.config || { value: 2, unit: 'minutes' };
+    var taskId = task.id;
+
+    // Collapsible editor (hidden by default, toggled from skill-row button)
+    var html = '<div class="schedule-editor" id="schedule-' + taskId + '">';
+
+    // Tab toggle
+    html += '<div class="schedule-type-tabs">';
+    html += '<button class="schedule-tab' + (sType === 'interval' ? ' active' : '') + '" data-type="interval" onclick="switchScheduleType(\'' + taskId + '\', \'interval\')">' + t('admin.scheduleInterval') + '</button>';
+    html += '<button class="schedule-tab' + (sType === 'fixed-time' ? ' active' : '') + '" data-type="fixed-time" onclick="switchScheduleType(\'' + taskId + '\', \'fixed-time\')">' + t('admin.scheduleFixedTime') + '</button>';
+    html += '</div>';
+
+    // Controls
+    html += '<div class="schedule-controls">';
+    if (sType === 'interval') {
+      html += renderIntervalControls(taskId, sConfig);
+    } else {
+      html += renderFixedTimeControls(taskId, sConfig);
+    }
+    html += '</div>';
+
+    // Save button
+    html += '<button class="btn btn-primary btn-sm" onclick="saveSchedule(\'' + taskId + '\')">' + t('admin.scheduleSave') + '</button>';
+    html += '</div>';
+
+    return html;
+  }
+
+  function renderIntervalControls(taskId, config) {
+    var val = (config && config.value) || 2;
+    var unit = (config && config.unit) || 'minutes';
+    var html = '<div class="schedule-interval-row">';
+    html += '<label>' + t('admin.scheduleEvery') + '</label>';
+    html += '<input type="number" class="schedule-interval-input" id="interval-value-' + taskId + '" min="1" value="' + val + '">';
+    html += '<select class="schedule-unit-select" id="interval-unit-' + taskId + '">';
+    html += '<option value="minutes"' + (unit === 'minutes' ? ' selected' : '') + '>' + t('admin.scheduleMinutes') + '</option>';
+    html += '<option value="hours"' + (unit === 'hours' ? ' selected' : '') + '>' + t('admin.scheduleHours') + '</option>';
+    html += '</select>';
+    html += '</div>';
+    return html;
+  }
+
+  function buildTimeSelectHtml(selectedHour, selectedMinute) {
+    var hSel = '<select class="schedule-hour-select schedule-unit-select">';
+    for (var h = 0; h < 24; h++) {
+      var hStr = h.toString().padStart(2, '0');
+      hSel += '<option value="' + hStr + '"' + (hStr === selectedHour ? ' selected' : '') + '>' + hStr + '</option>';
+    }
+    hSel += '</select>';
+    var mSel = '<select class="schedule-minute-select schedule-unit-select">';
+    for (var m = 0; m < 60; m++) {
+      var mStr = m.toString().padStart(2, '0');
+      mSel += '<option value="' + mStr + '"' + (mStr === selectedMinute ? ' selected' : '') + '>' + mStr + '</option>';
+    }
+    mSel += '</select>';
+    return hSel + ' <span style="color:#999;">:</span> ' + mSel;
+  }
+
+  function renderFixedTimeControls(taskId, config) {
+    var times = (config && config.times) || ['08:00'];
+    var html = '<div class="schedule-time-list" id="time-list-' + taskId + '">';
+    for (var i = 0; i < times.length; i++) {
+      var parts = times[i].split(':');
+      var hh = (parts[0] || '08').padStart(2, '0');
+      var mm = (parts[1] || '00').padStart(2, '0');
+      html += '<div class="schedule-time-item">';
+      html += buildTimeSelectHtml(hh, mm);
+      html += ' <button class="btn btn-danger btn-sm" onclick="removeTimePoint(\'' + taskId + '\', this)">' + t('admin.scheduleRemoveTime') + '</button>';
+      html += '</div>';
+    }
+    html += '</div>';
+    html += '<button class="btn btn-sm schedule-add-btn" onclick="addTimePoint(\'' + taskId + '\')" style="margin-top:8px;border:1px solid #d9d9d9;background:#fff;">' + t('admin.scheduleAddTime') + '</button>';
+    return html;
+  }
+
+  function toggleScheduleEditor(taskId) {
+    var editor = document.getElementById('schedule-' + taskId);
+    var arrow = document.getElementById('schedule-arrow-' + taskId);
+    if (!editor) return;
+    var isOpen = editor.classList.toggle('open');
+    if (arrow) {
+      if (isOpen) { arrow.classList.add('open'); } else { arrow.classList.remove('open'); }
+    }
+  }
+
+  function switchScheduleType(taskId, newType) {
+    var editor = document.getElementById('schedule-' + taskId);
+    if (!editor) return;
+
+    // Update tab active state
+    var tabs = editor.querySelectorAll('.schedule-tab');
+    for (var i = 0; i < tabs.length; i++) {
+      if (tabs[i].getAttribute('data-type') === newType) {
+        tabs[i].classList.add('active');
+      } else {
+        tabs[i].classList.remove('active');
+      }
+    }
+
+    // Re-render controls
+    var controlsDiv = editor.querySelector('.schedule-controls');
+    if (newType === 'interval') {
+      controlsDiv.innerHTML = renderIntervalControls(taskId, { value: 2, unit: 'minutes' });
+    } else {
+      controlsDiv.innerHTML = renderFixedTimeControls(taskId, { times: ['08:00'] });
+    }
+  }
+
+  function addTimePoint(taskId) {
+    var list = document.getElementById('time-list-' + taskId);
+    if (!list) return;
+    var item = document.createElement('div');
+    item.className = 'schedule-time-item';
+    item.innerHTML = buildTimeSelectHtml('12', '00') +
+      ' <button class="btn btn-danger btn-sm" onclick="removeTimePoint(\'' + taskId + '\', this)">' + t('admin.scheduleRemoveTime') + '</button>';
+    list.appendChild(item);
+  }
+
+  function removeTimePoint(taskId, btn) {
+    var list = document.getElementById('time-list-' + taskId);
+    if (!list) return;
+    var items = list.querySelectorAll('.schedule-time-item');
+    if (items.length <= 1) {
+      showToast(t('admin.scheduleErrorNoTime'), 'error');
+      return;
+    }
+    btn.parentElement.remove();
+  }
+
+  function saveSchedule(taskId) {
+    var editor = document.getElementById('schedule-' + taskId);
+    if (!editor) return;
+
+    // Determine active schedule type
+    var activeTab = editor.querySelector('.schedule-tab.active');
+    var scheduleType = activeTab ? activeTab.getAttribute('data-type') : 'interval';
+
+    var config;
+    if (scheduleType === 'interval') {
+      var valInput = document.getElementById('interval-value-' + taskId);
+      var unitSelect = document.getElementById('interval-unit-' + taskId);
+      config = {
+        value: parseInt(valInput.value, 10),
+        unit: unitSelect.value
+      };
+    } else {
+      var timeItems = editor.querySelectorAll('.schedule-time-item');
+      var times = [];
+      for (var i = 0; i < timeItems.length; i++) {
+        var hSelect = timeItems[i].querySelector('.schedule-hour-select');
+        var mSelect = timeItems[i].querySelector('.schedule-minute-select');
+        if (hSelect && mSelect) {
+          times.push(hSelect.value + ':' + mSelect.value);
+        }
+      }
+      config = { times: times };
+    }
+
+    // Validate
+    var validation = validateScheduleConfig(scheduleType, config);
+    if (!validation.valid) {
+      showToast(validation.error, 'error');
+      return;
+    }
+
+    // Build cron
+    var cron = buildCronFromConfig(scheduleType, config);
+
+    // Call IPC
+    if (!heartbeatApi) {
+      showToast(t('admin.scheduleUpdateFailed'), 'error');
+      return;
+    }
+
+    heartbeatApi.updateTask(taskId, {
+      cron: cron,
+      scheduleType: scheduleType,
+      scheduleConfig: config
+    }).then(function() {
+      // Update local state
+      for (var i = 0; i < heartbeatTasks.length; i++) {
+        if (heartbeatTasks[i].id === taskId) {
+          heartbeatTasks[i].cron = cron;
+          heartbeatTasks[i].scheduleType = scheduleType;
+          heartbeatTasks[i].scheduleConfig = config;
+          break;
+        }
+      }
+      showToast(t('admin.scheduleUpdated'));
+      renderContent();
+    }).catch(function(e) {
+      showToast(t('admin.scheduleUpdateFailed') + ': ' + e.message, 'error');
+    });
+  }
+
+  function buildCronFromConfig(scheduleType, config) {
+    if (scheduleType === 'interval') {
+      if (config.unit === 'minutes') {
+        return '*/' + config.value + ' * * * *';
+      } else {
+        return '0 */' + config.value + ' * * *';
+      }
+    } else {
+      // fixed-time
+      var hours = config.times.map(function(t) { return parseInt(t.split(':')[0]); });
+      var minutes = config.times.map(function(t) { return parseInt(t.split(':')[1]); });
+      var allSameMinute = minutes.every(function(m) { return m === minutes[0]; });
+      if (allSameMinute) {
+        return minutes[0] + ' ' + hours.join(',') + ' * * *';
+      } else {
+        return '0 ' + hours.join(',') + ' * * *';
+      }
+    }
+  }
+
+  function parseScheduleFromTask(task) {
+    return { scheduleType: task.scheduleType, config: task.scheduleConfig };
+  }
+
+  function validateScheduleConfig(scheduleType, config) {
+    if (scheduleType === 'interval') {
+      if (!Number.isInteger(config.value) || config.value < 1) {
+        return { valid: false, error: t('admin.scheduleErrorPositiveInt') || '间隔值必须为正整数' };
+      }
+      if (config.unit === 'minutes' && config.value > 59) {
+        return { valid: false, error: t('admin.scheduleErrorMinutesMax') || '分钟间隔不能超过 59' };
+      }
+      if (config.unit === 'hours' && config.value > 23) {
+        return { valid: false, error: t('admin.scheduleErrorHoursMax') || '小时间隔不能超过 23' };
+      }
+      return { valid: true };
+    }
+    // fixed-time
+    if (!Array.isArray(config.times) || config.times.length === 0) {
+      return { valid: false, error: t('admin.scheduleErrorNoTime') || '至少需要一个时间点' };
+    }
+    var timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/;
+    for (var i = 0; i < config.times.length; i++) {
+      if (!timeRegex.test(config.times[i])) {
+        return { valid: false, error: (t('admin.scheduleErrorInvalidTime') || '无效时间格式') + ': ' + config.times[i] };
+      }
+    }
+    var uniqueTimes = new Set(config.times);
+    if (uniqueTimes.size !== config.times.length) {
+      return { valid: false, error: t('admin.scheduleErrorDuplicate') || '时间点不能重复' };
+    }
+    return { valid: true };
+  }
+
+  // ==================== 数据面板 ====================
+  var dashboardApi = window.electronAPI && window.electronAPI.dashboard;
+  var dashboardState = {
+    platform: 'all',
+    dateStart: addDays(todayStr(), -3),
+    dateEnd: addDays(todayStr(), 7),
+    snapshotRange: 3 // 趋势图时间范围（天）
+  };
+  var chartInstances = {};
+
+  function todayStr() {
+    var d = new Date();
+    var y = d.getFullYear();
+    var m = String(d.getMonth() + 1).padStart(2, '0');
+    var dd = String(d.getDate()).padStart(2, '0');
+    return y + '-' + m + '-' + dd;
+  }
+
+  function addDays(dateStr, n) {
+    var d = new Date(dateStr + 'T00:00:00');
+    d.setDate(d.getDate() + n);
+    var y = d.getFullYear();
+    var m = String(d.getMonth() + 1).padStart(2, '0');
+    var dd = String(d.getDate()).padStart(2, '0');
+    return y + '-' + m + '-' + dd;
+  }
+
+  function getStartTime(days) {
+    var d = new Date();
+    d.setDate(d.getDate() - (days - 1));
+    d.setHours(0, 0, 0, 0);
+    return d.toISOString().replace('T', ' ').substring(0, 19);
+  }
+
+  var CHART_COLORS = [
+    '#1890ff', '#52c41a', '#faad14', '#f5222d', '#722ed1',
+    '#13c2c2', '#eb2f96', '#fa8c16', '#2f54eb', '#a0d911'
+  ];
+
+  function destroyCharts() {
+    for (var k in chartInstances) {
+      if (chartInstances[k]) chartInstances[k].destroy();
+    }
+    chartInstances = {};
+  }
+
+  function formatTime(val) {
+    if (!val || val === '0' || val === 0) return currentLang === 'en' ? 'Unknown' : '未知';
+    var str = String(val).replace('T', ' ').replace('Z', '');
+    var parts = str.split(' ');
+    if (parts.length < 2) return str;
+    return parts[0].substring(5) + ' ' + parts[1].substring(0, 5);
+  }
+
+  var WEEKDAYS_ZH = ['周日','周一','周二','周三','周四','周五','周六'];
+  var WEEKDAYS_EN = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+
+  function formatDateHeader(dateStr) {
+    if (!dateStr) return '-';
+    var s = normalizeDate(dateStr);
+    var parts = s.split('-');
+    if (parts.length !== 3) return s;
+    var d = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+    if (isNaN(d.getTime())) return s;
+    var weekday = currentLang === 'en' ? WEEKDAYS_EN[d.getDay()] : WEEKDAYS_ZH[d.getDay()];
+    var isToday = s === todayStr();
+    var isWeekend = d.getDay() === 0 || d.getDay() === 6;
+    var color = isToday ? '#1890ff' : (isWeekend ? '#f5222d' : '#333');
+    return '<span style="color:' + color + ';font-weight:' + (isToday ? 'bold' : 'normal') + '">' + weekday + '<br>' + parts[1] + '/' + parts[2] + '</span>';
+  }
+
+  function formatDateShort(dateStr) {
+    if (!dateStr) return '-';
+    var s = normalizeDate(dateStr);
+    return s.substring(5); // MM-DD
+  }
+
+  // mysql2 返回 DATE 类型时可能是 Date 对象，统一转成 YYYY-MM-DD 字符串
+  function normalizeDate(val) {
+    if (!val) return '';
+    if (val instanceof Date) {
+      var y = val.getFullYear();
+      var m = String(val.getMonth() + 1).padStart(2, '0');
+      var d = String(val.getDate()).padStart(2, '0');
+      return y + '-' + m + '-' + d;
+    }
+    return String(val).substring(0, 10);
+  }
+
+  function renderDashboard(container) {
+    if (!dashboardApi) {
+      container.innerHTML = '<div class="content-card"><div class="no-data-hint">' + t('admin.dashboardUnavailable') + '</div></div>';
+      return;
+    }
+
+    var tabs = [
+      { id: 'all',     label: currentLang === 'en' ? 'All' : '全部' },
+      { id: 'ctrip',   label: t('platform.ctrip') },
+      { id: 'meituan', label: t('platform.meituan') },
+      { id: 'pms',     label: 'PMS' },
+      { id: 'booking', label: 'Booking' }
+    ];
+
+    var dateRanges = [
+      { startDays: -3, endDays: 7, label: currentLang === 'en' ? 'Recent' : '近期' },
+      { startDays: 0, endDays: 0, label: t('admin.today') },
+      { startDays: 0, endDays: 7, label: t('admin.next7days') },
+      { startDays: 0, endDays: 14, label: t('admin.next14days') },
+      { startDays: 0, endDays: 30, label: t('admin.next30days') }
+    ];
+
+    var panels = TAB_PANELS[dashboardState.platform] || TAB_PANELS['all'];
+
+    var html = '<div class="content-card">';
+    // tabs
+    html += '<div class="dashboard-tabs">';
+    for (var i = 0; i < tabs.length; i++) {
+      var tb = tabs[i];
+      html += '<button class="dashboard-tab' + (tb.id === dashboardState.platform ? ' active' : '') +
+        '" data-platform="' + tb.id + '">' + tb.label + '</button>';
+    }
+    html += '</div>';
+
+    // date range bar
+    html += '<div class="date-range-bar">';
+    for (var j = 0; j < dateRanges.length; j++) {
+      var dr = dateRanges[j];
+      var isActive = (addDays(todayStr(), dr.startDays) === dashboardState.dateStart && addDays(todayStr(), dr.endDays) === dashboardState.dateEnd);
+      html += '<button class="time-range-btn" data-start="' + dr.startDays + '" data-end="' + dr.endDays + '"' +
+        (isActive ? ' style="background:#1890ff;color:#fff;"' : '') + '>' + dr.label + '</button>';
+    }
+    html += ' <input type="date" class="date-input" id="dashDateStart" value="' + dashboardState.dateStart + '">';
+    html += ' ~ <input type="date" class="date-input" id="dashDateEnd" value="' + dashboardState.dateEnd + '">';
+    html += '</div>';
+
+    // panels — 根据 tab 决定显示哪些
+    if (panels.priceCalendar) {
+      html += '<div id="dashPriceCalendar" class="dashboard-panel"><div class="loading">' + t('admin.loadingData') + '</div></div>';
+    }
+    if (panels.roomCalendar) {
+      html += '<div id="dashRoomCalendar" class="dashboard-panel"><div class="loading">' + t('admin.loadingData') + '</div></div>';
+    }
+    if (panels.trend) {
+      html += '<div id="dashTrendChart" class="dashboard-panel"></div>';
+    }
+    html += '</div>';
+
+    container.innerHTML = html;
+
+    // bind tab clicks
+    container.querySelectorAll('.dashboard-tab').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        dashboardState.platform = btn.dataset.platform;
+        renderDashboard(container);
+      });
+    });
+    container.querySelectorAll('.time-range-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var startDays = parseInt(btn.dataset.start);
+        var endDays = parseInt(btn.dataset.end);
+        dashboardState.dateStart = addDays(todayStr(), startDays);
+        dashboardState.dateEnd = addDays(todayStr(), endDays);
+        renderDashboard(container);
+      });
+    });
+    var startInput = document.getElementById('dashDateStart');
+    var endInput = document.getElementById('dashDateEnd');
+    if (startInput) startInput.addEventListener('change', function() {
+      dashboardState.dateStart = startInput.value;
+      loadDashboardData();
+    });
+    if (endInput) endInput.addEventListener('change', function() {
+      dashboardState.dateEnd = endInput.value;
+      loadDashboardData();
+    });
+
+    loadDashboardData();
+  }
+
+  async function loadDashboardData() {
+    destroyCharts();
+    var panels = TAB_PANELS[dashboardState.platform] || TAB_PANELS['all'];
+    var tab = dashboardState.platform;
+
+    try {
+      // 价格日历
+      if (panels.priceCalendar) {
+        var priceArea = document.getElementById('dashPriceCalendar');
+        if (priceArea) {
+          var priceData = await dashboardApi.getPriceCalendar(dashboardState.dateStart, dashboardState.dateEnd);
+          priceData = filterByTab(priceData, tab);
+          renderPriceCalendar(priceArea, priceData);
+        }
+      }
+
+      // 房态日历
+      if (panels.roomCalendar) {
+        var roomArea = document.getElementById('dashRoomCalendar');
+        if (roomArea) {
+          var roomData = await dashboardApi.getRoomCalendar(dashboardState.dateStart, dashboardState.dateEnd);
+          roomData = filterByTab(roomData, tab);
+          if (tab === 'pms') {
+            renderPmsForecast(roomArea, roomData);
+          } else {
+            renderRoomCalendar(roomArea, roomData);
+          }
+        }
+      }
+
+      // 趋势图
+      if (panels.trend) {
+        var trendArea = document.getElementById('dashTrendChart');
+        if (trendArea) {
+          var startTime = getStartTime(dashboardState.snapshotRange);
+          var snapData = await dashboardApi.getPriceSnapshots(startTime);
+          snapData = filterByTab(snapData, tab);
+          renderTrendChart(trendArea, snapData);
+        }
+      }
+    } catch (e) {
+      var errArea = document.getElementById('dashPriceCalendar') || document.getElementById('dashRoomCalendar');
+      if (errArea) errArea.innerHTML = '<div class="no-data-hint">' + t('admin.loadFailed') + ': ' + e.message + '</div>';
+    }
+  }
+
+  // ---- 价格日历表格 ----
+  function renderPriceCalendar(area, data) {
+    if (!data || data.length === 0) {
+      area.innerHTML = '<div class="dashboard-panel"><h4>' + t('admin.priceCalendar') + '</h4>' +
+        '<div class="no-data-hint">' + t('admin.noPriceCalendarData') + '</div></div>';
+      return;
+    }
+
+    // 按 hotel_name 分组（本店 + 各竞品）
+    var hotelGroups = {}; // hotel_name → [records]
+    var hotelOrder = [];  // 保持顺序：本店在前
+    for (var i = 0; i < data.length; i++) {
+      var d = data[i];
+      var hName = d.hotel_name || '本店';
+      if (!hotelGroups[hName]) {
+        hotelGroups[hName] = [];
+        hotelOrder.push(hName);
+      }
+      hotelGroups[hName].push(d);
+    }
+
+    var html = '';
+
+    for (var hi = 0; hi < hotelOrder.length; hi++) {
+      var hotelName = hotelOrder[hi];
+      var hotelData = hotelGroups[hotelName];
+      var isOwn = hotelData[0] && (hotelData[0].hotel_id === 0 || hotelData[0].hotel_id == null);
+
+      // 收集该酒店的日期列
+      var dateSet = {};
+      var dates = [];
+      var groupMap = {};
+      for (var j = 0; j < hotelData.length; j++) {
+        var d = hotelData[j];
+        var dateStr = d.date ? normalizeDate(d.date) : null;
+        if (!dateStr) continue;
+        if (!dateSet[dateStr]) { dateSet[dateStr] = true; dates.push(dateStr); }
+
+        var displayName = d.display_name || d.room_name;
+        if (!groupMap[displayName]) groupMap[displayName] = { platforms: {} };
+        var basePlatform = d.platform;
+        if (!groupMap[displayName].platforms[basePlatform]) {
+          groupMap[displayName].platforms[basePlatform] = { dates: {} };
+        }
+        groupMap[displayName].platforms[basePlatform].dates[dateStr] = d;
+      }
+      dates.sort();
+
+      var sectionColor = isOwn ? '#1890ff' : '#fa8c16';
+      var sectionIcon = isOwn ? '🏨' : '🏢';
+
+      html += '<div class="dashboard-panel" style="border-left:3px solid ' + sectionColor + ';margin-bottom:16px;">';
+      html += '<h4 style="margin:0 0 10px 0;">' + sectionIcon + ' ' + escapeHtml(hotelName) + '</h4>';
+
+      if (dates.length === 0) {
+        html += '<div class="no-data-hint">暂无价格数据</div>';
+        html += '</div>';
+        continue;
+      }
+
+      html += '<div style="overflow-x:auto"><table class="calendar-table">';
+      html += '<thead><tr><th>' + t('admin.roomType') + '</th>';
+      for (var di = 0; di < dates.length; di++) {
+        var isToday = dates[di] === todayStr();
+        html += '<th' + (isToday ? ' style="background:#e6f7ff;"' : '') + '>' + formatDateHeader(dates[di]) + '</th>';
+      }
+      html += '</tr></thead><tbody>';
+
+      var groupNames = Object.keys(groupMap).sort();
+      for (var gi = 0; gi < groupNames.length; gi++) {
+        var gName = groupNames[gi];
+        var group = groupMap[gName];
+        var platformKeys = Object.keys(group.platforms);
+
+        if (platformKeys.length === 1) {
+          var pk = platformKeys[0];
+          var pl = PLATFORM_SHORT_LABEL[pk] || platformLabels[pk] || pk;
+          html += '<tr><td>' + escapeHtml(gName) + ' <span style="color:#999;font-size:11px">(' + pl + ')</span></td>';
+          for (var dj = 0; dj < dates.length; dj++) {
+            var rec = group.platforms[pk].dates[dates[dj]];
+            html += buildPriceCell(rec, dates[dj]);
+          }
+          html += '</tr>';
+        } else {
+          html += '<tr class="room-group-header"><td colspan="' + (dates.length + 1) + '">' + escapeHtml(gName) + '</td></tr>';
+          for (var pi = 0; pi < platformKeys.length; pi++) {
+            var ppk = platformKeys[pi];
+            var ppl = PLATFORM_SHORT_LABEL[ppk] || platformLabels[ppk] || ppk;
+            html += '<tr class="sub-row"><td>' + ppl + '</td>';
+            for (var dk = 0; dk < dates.length; dk++) {
+              var prec = group.platforms[ppk].dates[dates[dk]];
+              html += buildPriceCell(prec, dates[dk]);
+            }
+            html += '</tr>';
+          }
+        }
+      }
+      html += '</tbody></table></div></div>';
+    }
+
+    area.innerHTML = html;
+  }
+
+  function buildPriceCell(rec, dateStr) {
+    var isToday = dateStr && dateStr === todayStr();
+    var bgStyle = isToday ? ' style="background:#e6f7ff;"' : '';
+    if (!rec || rec.price == null) return '<td class="price-cell"' + bgStyle + '>-</td>';
+    var price = Number(rec.price);
+    var tooltip = '';
+    if (rec.cost != null) tooltip += (currentLang === 'en' ? 'Cost: ' : '底价: ') + rec.cost;
+    if (rec.breakfast) tooltip += (tooltip ? ' | ' : '') + rec.breakfast;
+    if (rec.available != null) {
+      var avail = rec.available ? (currentLang === 'en' ? 'Available' : '可售') : (currentLang === 'en' ? 'Closed' : '关房');
+      tooltip += (tooltip ? ' | ' : '') + avail;
+    }
+    if (rec.plan_name) tooltip += (tooltip ? ' | ' : '') + rec.plan_name;
+
+    var html = '<td class="price-cell"' + bgStyle + '>';
+    if (price > 0) {
+      html += (rec.currency === 'USD' ? '$' : '¥') + price;
+    } else {
+      html += '-';
+    }
+    if (tooltip) {
+      html += '<span class="price-tooltip">' + escapeHtml(tooltip) + '</span>';
+    }
+    html += '</td>';
+    return html;
+  }
+
+  // ---- 房态日历表格 ----
+  function renderRoomCalendar(area, data) {
+    if (!data || data.length === 0) {
+      area.innerHTML = '<div class="dashboard-panel"><h4>' + t('admin.roomCalendar') + '</h4>' +
+        '<div class="no-data-hint">' + t('admin.noRoomCalendarData') + '</div></div>';
+      return;
+    }
+
+    var dateSet = {};
+    var dates = [];
+    // 按 display_name 分组 → 下级按 platform 分组
+    var groupMap = {}; // display_name → { platforms: { platform → { dates: { date → record }, hasPmsMetrics } } }
+    for (var i = 0; i < data.length; i++) {
+      var d = data[i];
+      var dateStr = d.date ? normalizeDate(d.date) : null;
+      if (!dateStr) continue;
+      if (!dateSet[dateStr]) { dateSet[dateStr] = true; dates.push(dateStr); }
+
+      var displayName = d.display_name || d.room_name;
+      if (!groupMap[displayName]) groupMap[displayName] = { platforms: {} };
+      var plat = d.platform;
+      if (!groupMap[displayName].platforms[plat]) {
+        groupMap[displayName].platforms[plat] = { dates: {}, hasPmsMetrics: false };
+      }
+      groupMap[displayName].platforms[plat].dates[dateStr] = d;
+      if (d.occupancy_rate != null || d.adr != null) {
+        groupMap[displayName].platforms[plat].hasPmsMetrics = true;
+      }
+    }
+    dates.sort();
+
+    var html = '<div class="dashboard-panel"><h4>' + t('admin.roomCalendar') + '</h4>';
+    html += '<div style="overflow-x:auto"><table class="calendar-table">';
+    html += '<thead><tr><th>' + t('admin.roomType') + '</th>';
+    for (var di = 0; di < dates.length; di++) {
+      html += '<th>' + formatDateShort(dates[di]) + '</th>';
+    }
+    html += '</tr></thead><tbody>';
+
+    var groupNames = Object.keys(groupMap).sort();
+    for (var gi = 0; gi < groupNames.length; gi++) {
+      var gName = groupNames[gi];
+      var group = groupMap[gName];
+      var platKeys = Object.keys(group.platforms);
+
+      if (platKeys.length === 1) {
+        // 单平台：一行搞定
+        var pk = platKeys[0];
+        var platData = group.platforms[pk];
+        var pl = PLATFORM_SHORT_LABEL[pk] || platformLabels[pk] || pk;
+        html += '<tr><td>' + escapeHtml(gName) + ' <span style="color:#999;font-size:11px">(' + pl + ')</span></td>';
+        for (var dj = 0; dj < dates.length; dj++) {
+          html += buildRoomCell(platData.dates[dates[dj]]);
+        }
+        html += '</tr>';
+
+        // PMS 指标子行（入住率/ADR/RevPAR）
+        if (platData.hasPmsMetrics) {
+          html += buildPmsMetricRows(platData.dates, dates);
+        }
+      } else {
+        // 多平台：先房型名，再各平台子行
+        html += '<tr class="room-group-header"><td colspan="' + (dates.length + 1) + '">' + escapeHtml(gName) + '</td></tr>';
+        for (var pi = 0; pi < platKeys.length; pi++) {
+          var ppk = platKeys[pi];
+          var ppData = group.platforms[ppk];
+          var ppl = PLATFORM_SHORT_LABEL[ppk] || platformLabels[ppk] || ppk;
+          html += '<tr class="sub-row"><td>' + ppl + '</td>';
+          for (var dk = 0; dk < dates.length; dk++) {
+            html += buildRoomCell(ppData.dates[dates[dk]]);
+          }
+          html += '</tr>';
+
+          if (ppData.hasPmsMetrics) {
+            html += buildPmsMetricRows(ppData.dates, dates);
+          }
+        }
+      }
+    }
+    html += '</tbody></table></div></div>';
+    area.innerHTML = html;
+  }
+
+  function buildPmsMetricRows(dateMap, dates) {
+    var html = '';
+    // 入住率
+    html += '<tr class="metric-row"><td style="padding-left:24px;font-size:11px;color:#888">' + t('admin.occupancyRate') + '</td>';
+    for (var i = 0; i < dates.length; i++) {
+      var rec = dateMap[dates[i]];
+      if (rec && rec.occupancy_rate != null) {
+        html += '<td style="font-size:11px;color:#888">' + rec.occupancy_rate + '%</td>';
+      } else {
+        html += '<td>-</td>';
+      }
+    }
+    html += '</tr>';
+    // ADR
+    html += '<tr class="metric-row"><td style="padding-left:24px;font-size:11px;color:#888">ADR</td>';
+    for (var j = 0; j < dates.length; j++) {
+      var aRec = dateMap[dates[j]];
+      if (aRec && aRec.adr != null) {
+        html += '<td style="font-size:11px;color:#888">¥' + aRec.adr + '</td>';
+      } else {
+        html += '<td>-</td>';
+      }
+    }
+    html += '</tr>';
+    // RevPAR
+    html += '<tr class="metric-row"><td style="padding-left:24px;font-size:11px;color:#888">RevPAR</td>';
+    for (var k = 0; k < dates.length; k++) {
+      var rRec = dateMap[dates[k]];
+      if (rRec && rRec.revpar != null) {
+        html += '<td style="font-size:11px;color:#888">¥' + rRec.revpar + '</td>';
+      } else {
+        html += '<td>-</td>';
+      }
+    }
+    html += '</tr>';
+    return html;
+  }
+
+  function buildRoomCell(rec) {
+    if (!rec) return '<td>-</td>';
+    var avail = rec.available_rooms != null ? rec.available_rooms : null;
+    var total = rec.total_rooms != null ? rec.total_rooms : null;
+    if (avail == null) return '<td>-</td>';
+
+    var ratio = total > 0 ? (avail / total) : 0;
+    var cls = '';
+    if (avail <= 0) cls = 'avail-black';
+    else if (ratio < 0.2) cls = 'avail-red';
+    else if (ratio < 0.5) cls = 'avail-yellow';
+    else cls = 'avail-green';
+
+    return '<td class="' + cls + '">' + avail + (total != null ? '/' + total : '') + '</td>';
+  }
+
+  // ---- PMS 房态预测（专用渲染） ----
+  function renderPmsForecast(area, data) {
+    if (!data || data.length === 0) {
+      area.innerHTML = '<div class="dashboard-panel"><h4>' + t('admin.pmsForecast') + '</h4>' +
+        '<div class="no-data-hint">' + t('admin.noRoomCalendarData') + '</div></div>';
+      return;
+    }
+
+    var dateSet = {};
+    var dates = [];
+    var groupMap = {}; // roomName → { dates: { date → record } }
+    for (var i = 0; i < data.length; i++) {
+      var d = data[i];
+      var dateStr = d.date ? normalizeDate(d.date) : null;
+      if (!dateStr) continue;
+      if (!dateSet[dateStr]) { dateSet[dateStr] = true; dates.push(dateStr); }
+      var name = d.display_name || d.room_name;
+      if (!groupMap[name]) groupMap[name] = { dates: {} };
+      groupMap[name].dates[dateStr] = d;
+    }
+    dates.sort();
+
+    var html = '<div class="dashboard-panel"><h4>' + t('admin.pmsForecast') + '</h4>';
+    html += '<div style="overflow-x:auto"><table class="calendar-table">';
+    html += '<thead><tr><th>' + t('admin.roomType') + '</th>';
+    for (var di = 0; di < dates.length; di++) {
+      html += '<th>' + formatDateShort(dates[di]) + '</th>';
+    }
+    html += '</tr></thead><tbody>';
+
+    var names = Object.keys(groupMap).sort();
+    for (var gi = 0; gi < names.length; gi++) {
+      var gName = names[gi];
+      var gData = groupMap[gName].dates;
+
+      // 可用/总房行
+      html += '<tr><td style="font-weight:600">' + escapeHtml(gName) + '</td>';
+      for (var dj = 0; dj < dates.length; dj++) {
+        html += buildRoomCell(gData[dates[dj]]);
+      }
+      html += '</tr>';
+
+      // 入住率
+      html += '<tr class="metric-row"><td style="padding-left:24px;font-size:11px;color:#888">' + t('admin.occupancyRate') + '</td>';
+      for (var dk = 0; dk < dates.length; dk++) {
+        var rec = gData[dates[dk]];
+        if (rec && rec.occupancy_rate != null) {
+          var occVal = Number(rec.occupancy_rate);
+          var occCls = occVal >= 80 ? 'avail-red' : (occVal >= 50 ? 'avail-yellow' : 'avail-green');
+          html += '<td class="' + occCls + '" style="font-size:11px">' + occVal + '%</td>';
+        } else {
+          html += '<td>-</td>';
+        }
+      }
+      html += '</tr>';
+
+      // ADR
+      html += '<tr class="metric-row"><td style="padding-left:24px;font-size:11px;color:#888">ADR</td>';
+      for (var dl = 0; dl < dates.length; dl++) {
+        var aRec = gData[dates[dl]];
+        html += '<td style="font-size:11px;color:#888">' + (aRec && aRec.adr != null ? '¥' + aRec.adr : '-') + '</td>';
+      }
+      html += '</tr>';
+
+      // RevPAR
+      html += '<tr class="metric-row"><td style="padding-left:24px;font-size:11px;color:#888">RevPAR</td>';
+      for (var dm = 0; dm < dates.length; dm++) {
+        var rRec = gData[dates[dm]];
+        html += '<td style="font-size:11px;color:#888">' + (rRec && rRec.revpar != null ? '¥' + rRec.revpar : '-') + '</td>';
+      }
+      html += '</tr>';
+    }
+    html += '</tbody></table></div></div>';
+    area.innerHTML = html;
+  }
+
+  // ---- 趋势折线图 ----
+  function renderTrendChart(area, data) {
+    if (!data || data.length === 0) {
+      area.innerHTML = '<div class="dashboard-panel"><h4>' + t('admin.priceTrend') + '</h4>' +
+        '<div class="no-data-hint">' + (currentLang === 'en' ? 'No trend data' : '暂无趋势数据') + '</div></div>';
+      return;
+    }
+
+    // group by "hotel_name - platform - room_name"
+    var seriesMap = {};
+    var timeLabels = [];
+    var timeSet = {};
+    for (var i = 0; i < data.length; i++) {
+      var d = data[i];
+      var pLabel = PLATFORM_SHORT_LABEL[d.platform] || platformLabels[d.platform] || d.platform;
+      var hLabel = d.hotel_name || '本店';
+      var key = (d.hotel_id > 0 ? hLabel + ' · ' : '') + pLabel + ' - ' + d.room_name;
+      if (!seriesMap[key]) seriesMap[key] = {};
+      var ft = formatTime(d.snapshot_time);
+      seriesMap[key][ft] = d.price;
+      if (!timeSet[ft]) { timeSet[ft] = true; timeLabels.push(ft); }
+    }
+
+    var datasets = [];
+    var keys = Object.keys(seriesMap);
+    for (var k = 0; k < keys.length; k++) {
+      var values = [];
+      for (var ti = 0; ti < timeLabels.length; ti++) {
+        values.push(seriesMap[keys[k]][timeLabels[ti]] || null);
+      }
+      datasets.push({
+        label: keys[k],
+        data: values,
+        borderColor: CHART_COLORS[k % CHART_COLORS.length],
+        backgroundColor: CHART_COLORS[k % CHART_COLORS.length] + '20',
+        tension: 0.3,
+        fill: false,
+        pointRadius: 3
+      });
+    }
+
+    var trendHtml = '<div class="dashboard-panel"><h4>' + t('admin.priceTrend') + '</h4>';
+    // 趋势时间范围选择
+    trendHtml += '<div class="time-range-bar">';
+    var tRanges = [
+      { days: 1, label: t('admin.today') },
+      { days: 3, label: t('admin.last3days') },
+      { days: 7, label: t('admin.last7days') }
+    ];
+    for (var j = 0; j < tRanges.length; j++) {
+      trendHtml += '<button class="time-range-btn trend-range-btn' +
+        (tRanges[j].days === dashboardState.snapshotRange ? ' active' : '') +
+        '" data-days="' + tRanges[j].days + '">' + tRanges[j].label + '</button>';
+    }
+    trendHtml += '</div>';
+    trendHtml += '<div class="chart-container"><canvas id="chartSnapshots"></canvas></div></div>';
+    area.innerHTML = trendHtml;
+
+    // bind trend range
+    area.querySelectorAll('.trend-range-btn').forEach(function(btn) {
+      btn.addEventListener('click', async function() {
+        dashboardState.snapshotRange = parseInt(btn.dataset.days);
+        var startTime = getStartTime(dashboardState.snapshotRange);
+        var snapData = await dashboardApi.getPriceSnapshots(startTime);
+        snapData = filterByTab(snapData, dashboardState.platform);
+        renderTrendChart(area, snapData);
+      });
+    });
+
+    // render chart
+    if (datasets.length > 0 && timeLabels.length > 0) {
+      var ctx = document.getElementById('chartSnapshots').getContext('2d');
+      chartInstances.snapshots = new Chart(ctx, {
+        type: 'line',
+        data: { labels: timeLabels, datasets: datasets },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          plugins: { title: { display: false } },
+          scales: { y: { beginAtZero: false, title: { display: true, text: t('admin.price') } } }
+        }
+      });
+    }
+  }
+
+  // ==================== 初始化 ====================
+  // 应用 i18n 到静态元素
+  document.documentElement.lang = currentLang === 'en' ? 'en' : 'zh-CN';
+  document.getElementById('pageTitle').textContent = t('admin.title');
+  document.getElementById('sidebarTitle').textContent = t('admin.title');
+  // ==================== 会话管理 ====================
+  async function renderChatSessions(container) {
+    container.innerHTML = '<div class="content-card"><p>' + t('admin.loadingData') + '...</p></div>';
+    var sessionsApi = window.electronAPI && window.electronAPI.sessions;
+    if (!sessionsApi) {
+      container.innerHTML = '<div class="content-card"><div class="empty-state"><p>Sessions API 不可用</p></div></div>';
+      return;
+    }
+    try {
+      var sessions = await sessionsApi.list();
+      if (!sessions || sessions.length === 0) {
+        container.innerHTML = '<div class="content-card"><div class="empty-state"><div class="icon">💬</div><p>' + t('admin.noSessions') + '</p></div></div>';
+        return;
+      }
+      var html = '<div class="content-card">';
+      html += '<div style="display:flex;flex-direction:column;gap:8px;">';
+      sessions.forEach(function(s) {
+        var time = s.updated_at ? new Date(s.updated_at).toLocaleString('zh-CN') : '';
+        html += '<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:var(--bg-secondary,#f9f9f9);border-radius:8px;">';
+        html += '<div class="btn-restore-session" data-id="' + s.id + '" style="flex:1;min-width:0;cursor:pointer;">';
+        html += '<div style="font-size:14px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + escapeHtml(s.title || '新对话') + '</div>';
+        html += '<div style="font-size:12px;color:var(--text-muted,#999);margin-top:4px;">' + escapeHtml(time) + '</div>';
+        html += '</div>';
+        html += '<button class="btn-delete-session" data-id="' + s.id + '" style="border:none;background:none;color:var(--text-muted,#999);cursor:pointer;padding:4px 8px;border-radius:4px;font-size:12px;">' + t('admin.deleteSession') + '</button>';
+        html += '</div>';
+      });
+      html += '</div></div>';
+      container.innerHTML = html;
+      container.querySelectorAll('.btn-delete-session').forEach(function(btn) {
+        btn.addEventListener('click', async function(e) {
+          e.stopPropagation();
+          if (!confirm(t('admin.confirmDeleteSession'))) return;
+          try {
+            await sessionsApi.delete(btn.dataset.id);
+            showToast(t('admin.deleted'));
+            renderChatSessions(container);
+          } catch (e) { showToast(t('admin.deleteFailed') + ': ' + e.message, 'error'); }
+        });
+      });
+      container.querySelectorAll('.btn-restore-session').forEach(function(btn) {
+        btn.addEventListener('click', async function() {
+          try {
+            await sessionsApi.switchFromAdmin(btn.dataset.id);
+            showToast('已切换到该会话');
+          } catch (e) { showToast('切换失败: ' + e.message, 'error'); }
+        });
+      });
+    } catch (e) {
+      container.innerHTML = '<div class="content-card"><div class="empty-state"><p>' + t('admin.loadFailed') + '</p></div></div>';
+    }
+  }
+
+  document.getElementById('mainHeader').textContent = t('admin.hotelConfig');
+
+  renderMenu();
+  renderContent();
+  loadData();
+
+  // 用户切换后页面重新获得焦点时，刷新数据（防止显示旧用户的配置）
+  document.addEventListener('visibilitychange', function() {
+    if (!document.hidden) {
+      loadData().then(function() { renderContent(); });
+    }
+  });
+
+  // 监听用户切换事件（主进程广播），立即刷新数据
+  if (window.electronAPI && window.electronAPI.auth && window.electronAPI.auth.onStateChange) {
+    window.electronAPI.auth.onStateChange(function(user) {
+      // 无论登入还是登出，都重新加载数据
+      hotelConfig = null;
+      ownHotel = null;
+      competitors = [];
+      renderContent();
+      if (user) {
+        loadData().then(function() { renderContent(); });
+      }
+    });
+  }
+</script>
+</body>
+</html>

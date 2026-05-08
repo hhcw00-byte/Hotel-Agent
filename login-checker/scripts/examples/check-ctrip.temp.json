@@ -1,0 +1,7 @@
+{
+  "platformCode": "ctrip",
+  "storeId": "demo-store",
+  "pageUrl": "https://ebooking.ctrip.com/rateplan/batchPriceSetting?microJump=true",
+  "headless": false,
+  "timeoutMs": 15000
+}

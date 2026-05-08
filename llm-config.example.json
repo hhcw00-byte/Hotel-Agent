@@ -1,0 +1,15 @@
+{
+  "provider": "openai",
+  "apiKey": "your-api-key-here",
+  "baseURL": "https://openrouter.ai/api/v1",
+  "model": "google/gemini-3.1-flash-lite-preview",
+  "recoveryModel": "google/gemini-2.5-flash",
+  "temperature": 0.7,
+  "maxTokens": 4096,
+  "fallback": {
+    "apiKey": "your-fallback-api-key-here",
+    "baseURL": "https://your-fallback-provider.com",
+    "model": "gemini-3-flash-preview",
+    "recoveryModel": "gemini-2.5-pro"
+  }
+}

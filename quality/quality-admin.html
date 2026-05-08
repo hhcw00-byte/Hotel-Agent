@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>质检任务</title>
+  <link rel="stylesheet" href="./quality.css">
+</head>
+<body>
+  <div class="page-shell">
+    <header class="topbar">
+      <div>
+        <h1 id="pageTitle">质检任务</h1>
+        <div class="topbar-subtitle" id="pageSubtitle">发布门店执行任务，复制提交链接并查看提交结果</div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <button class="btn btn-sm" id="langToggleBtn" style="min-width:48px">EN</button>
+        <button class="btn" id="refreshBtn">刷新</button>
+      </div>
+    </header>
+
+    <main class="main">
+      <div class="grid">
+        <section class="panel">
+          <h2 id="sectionCreateTitle">发布任务</h2>
+          <div id="formMessage" class="message"></div>
+          <form id="taskForm">
+            <div class="form-row">
+              <label for="taskName" id="labelTaskName">任务名称</label>
+              <input id="taskName" name="taskName" required placeholder="例：客房卫生每日质检">
+            </div>
+            <div class="form-row">
+              <label for="storeName" id="labelStoreName">执行门店</label>
+              <input id="storeName" name="storeName" required placeholder="例：上海人民广场店">
+            </div>
+            <div class="form-row">
+              <label for="dueAt" id="labelDueAt">截止时间</label>
+              <input id="dueAt" name="dueAt" type="datetime-local">
+            </div>
+            <div class="form-row">
+              <label for="instructions" id="labelInstructions">任务说明</label>
+              <textarea id="instructions" name="instructions" placeholder="说明执行要求、拍照标准或注意事项"></textarea>
+            </div>
+
+            <div class="form-row">
+              <label id="labelCheckItems">检查项</label>
+              <div id="itemEditor"></div>
+              <button type="button" class="btn btn-sm" id="addItemBtn">新增检查项</button>
+            </div>
+
+            <div class="actions">
+              <button type="submit" class="btn btn-primary" id="createTaskBtn">发布任务</button>
+            </div>
+          </form>
+        </section>
+
+        <section>
+          <div class="panel">
+            <h2 id="sectionTaskListTitle">任务列表</h2>
+            <div id="taskList" class="empty">加载中...</div>
+          </div>
+          <div class="panel" id="resultPanel">
+            <h2 id="sectionResultTitle">提交结果</h2>
+            <div id="resultContent" class="empty">选择任务查看结果</div>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <div class="modal" id="imageModal">
+    <img alt="附件预览" id="previewImage">
+  </div>
+
+  <script src="./quality-admin.js"></script>
+</body>
+</html>

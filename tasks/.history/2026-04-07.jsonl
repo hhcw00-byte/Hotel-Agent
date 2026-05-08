@@ -1,0 +1,14 @@
+{"taskId":"api-trip-public","skill":"api-trip-public-price","startTime":1775527500921,"endTime":1775527503876,"duration":2955,"success":false,"error":"403 This model is not available in your region."}
+{"taskId":"api-trip-public","skill":"api-trip-public-price","startTime":1775527811940,"endTime":1775527961492,"duration":149552,"success":false,"error":"Too many tool call iterations"}
+{"taskId":"api-trip-public","skill":"api-trip-public-price","startTime":1775529113134,"endTime":1775529342308,"duration":229174,"success":false,"error":"Agent completed but no valid data produced"}
+{"taskId":"api-trip-public","skill":"api-trip-public-price","startTime":1775548427801,"endTime":1775548740773,"duration":312972,"success":false,"error":"No content in API response (finish_reason: length)"}
+{"taskId":"api-trip-public","skill":"api-trip-public-price","startTime":1775551460436,"endTime":1775551884224,"duration":423788,"success":true}
+{"taskId":"api-trip-public","skill":"api-trip-public-price","startTime":1775554682915,"endTime":1775555021944,"duration":339029,"success":true}
+{"taskId":"api-trip-public","skill":"api-trip-public-price","startTime":1775556495996,"endTime":1775556620824,"duration":124828,"success":false,"error":"Agent completed but no valid data produced"}
+{"taskId":"api-trip-public","skill":"api-trip-public-price","startTime":1775558167414,"endTime":1775558309804,"duration":142390,"success":false,"error":"Agent completed but no valid data produced"}
+{"taskId":"api-trip-public","skill":"api-trip-public-price","startTime":1775578024160,"endTime":1775578453854,"duration":429694,"success":true}
+{"taskId":"api-trip-public","skill":"api-trip-public-price","startTime":1775579809166,"endTime":1775580112691,"duration":303525,"success":false,"error":"Agent completed but no valid data produced"}
+{"taskId":"api-trip-public","skill":"api-trip-public-price","startTime":1775580333131,"endTime":1775580637549,"duration":304418,"success":true}
+{"taskId":"api-ctrip-public","skill":"api-ctrip-public-price","startTime":1775585849068,"endTime":1775586140408,"duration":291340,"success":false,"error":"Agent completed but no valid data produced"}
+{"taskId":"api-booking-public","skill":"api-booking-public-price","startTime":1775586374826,"endTime":1775586728528,"duration":353702,"success":true}
+{"taskId":"api-booking-public","skill":"api-booking-public-price","startTime":1775589610632,"endTime":1775589671995,"duration":61363,"success":false,"error":"Agent completed but no valid data produced"}

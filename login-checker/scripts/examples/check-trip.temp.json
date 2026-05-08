@@ -1,0 +1,7 @@
+{
+  "platformCode": "trip",
+  "storeId": "demo-store",
+  "pageUrl": "https://ebooking.trip.com/rateplan/batchPriceSetting",
+  "headless": false,
+  "timeoutMs": 15000
+}

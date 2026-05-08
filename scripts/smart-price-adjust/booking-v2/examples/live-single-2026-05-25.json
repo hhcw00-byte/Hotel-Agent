@@ -1,0 +1,14 @@
+{
+  "platformCode": "booking",
+  "startDate": "2026-05-25",
+  "endDate": "2026-05-25",
+  "roomList": [
+    { "roomName": "单人间", "price": "412" }
+  ],
+  "runtime": {
+    "browserChannel": "chrome",
+    "userDataDir": "C:\\hotel-ota-automation\\chrome-profile\\booking",
+    "pricePageUrl": "https://admin.booking.com/hotel/hoteladmin/extranet_ng/manage/calendar/index.html?hotel_id=16360740&lang=zh&source=nav",
+    "timeoutMs": 60000
+  }
+}

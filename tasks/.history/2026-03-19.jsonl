@@ -1,0 +1,15 @@
+{"taskId":"meituan-room-status","skill":"room-status","startTime":1773897420024,"endTime":1773897707642,"duration":287618,"success":false,"error":"No content in API response (finish_reason: stop)"}
+{"taskId":"meituan-room-status","skill":"room-status","startTime":1773897720017,"endTime":1773897870817,"duration":150800,"success":false,"error":"No content in API response (finish_reason: stop)"}
+{"taskId":"meituan-room-status","skill":"room-status","startTime":1773897900014,"endTime":1773898198963,"duration":298949,"success":false,"error":"No content in API response (finish_reason: stop)"}
+{"taskId":"meituan-room-status","skill":"room-status","startTime":1773898200007,"endTime":1773898530905,"duration":330898,"success":false,"error":"No content in API response (finish_reason: length)"}
+{"taskId":"meituan-room-status","skill":"room-status","startTime":1773900900004,"endTime":1773901358730,"duration":458726,"success":true}
+{"taskId":"backend-pricing-ctrip","skill":"backend-pricing","startTime":1773903480007,"endTime":1773903840652,"duration":360645,"success":true}
+{"taskId":"backend-pricing-ctrip","skill":"backend-pricing","startTime":1773911160019,"endTime":1773911367015,"duration":206996,"success":false,"error":"No content in API response (finish_reason: stop)"}
+{"taskId":"backend-pricing-ctrip","skill":"backend-pricing","startTime":1773911400007,"endTime":1773911587461,"duration":187454,"success":false,"error":"No content in API response (finish_reason: stop)"}
+{"taskId":"backend-pricing-ctrip","skill":"backend-pricing","startTime":1773911640011,"endTime":1773912240024,"duration":600013,"success":false,"error":"Task timeout after 600s"}
+{"taskId":"backend-pricing-ctrip","skill":"backend-pricing","startTime":1773912360015,"endTime":1773912597878,"duration":237863,"success":false,"error":"No content in API response (finish_reason: stop)"}
+{"taskId":"backend-pricing-ctrip","skill":"backend-pricing","startTime":1773914160015,"endTime":1773914446708,"duration":286693,"success":false,"error":"No content in API response (finish_reason: content_filter)"}
+{"taskId":"competitive-intel-ctrip","skill":"competitive-intel","startTime":1773914446709,"endTime":1773915046710,"duration":600001,"success":false,"error":"Task timeout after 600s"}
+{"taskId":"public-pricing-ctrip","skill":"public-pricing","startTime":1773915046711,"endTime":1773915646715,"duration":600004,"success":false,"error":"Task timeout after 600s"}
+{"taskId":"meituan-room-status","skill":"room-status","startTime":1773915646717,"endTime":1773916246731,"duration":600014,"success":false,"error":"Task timeout after 600s"}
+{"taskId":"backend-pricing-ctrip","skill":"backend-pricing","startTime":1773917160005,"endTime":1773917419549,"duration":259544,"success":true}

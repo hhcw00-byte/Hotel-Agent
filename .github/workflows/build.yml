@@ -1,0 +1,133 @@
+name: Build Hotel-Agent
+
+on:
+  # 手动触发：GitHub Actions 页面点按钮运行
+  workflow_dispatch:
+    inputs:
+      version:
+        description: '版本号（留空则使用 package.json 中的版本）'
+        required: false
+        default: ''
+
+  # tag 触发：git tag v1.4.0 && git push --tags
+  push:
+    tags:
+      - 'v*'
+
+# 同一时间只允许一个打包任务运行，避免资源浪费
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: '20'
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            platform: win
+            artifact-ext: exe
+          - os: macos-latest
+            platform: mac
+            artifact-ext: dmg
+
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+
+    steps:
+      # ── 1. 检出代码 ──
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # ── 2. 安装 Node.js ──
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      # ── 3. 覆盖版本号（如果手动指定了） ──
+      - name: Override version (if specified)
+        if: inputs.version != ''
+        shell: bash
+        run: |
+          npm version "${{ inputs.version }}" --no-git-tag-version --allow-same-version
+
+      # ── 4. 安装主项目依赖 ──
+      - name: Install dependencies
+        run: npm ci
+
+      # ── 5. 安装爬虫子项目依赖（含 playwright、sharp 等 native 模块，需要平台匹配） ──
+      - name: Install ai-web-crawler dependencies
+        working-directory: scripts/ai-web-crawler
+        run: npm ci
+
+      # ── 6. 注入敏感配置文件（从 GitHub Secrets） ──
+      - name: Inject config files
+        shell: bash
+        run: |
+          echo "$CRAWLER_CONFIG_YAML" > scripts/ai-web-crawler/config.yaml
+          echo "$LLM_CONFIG_JSON" > llm-config.json
+          echo "$DB_CONFIG_JSON" > db-config.json
+        env:
+          CRAWLER_CONFIG_YAML: ${{ secrets.CRAWLER_CONFIG_YAML }}
+          LLM_CONFIG_JSON: ${{ secrets.LLM_CONFIG_JSON }}
+          DB_CONFIG_JSON: ${{ secrets.DB_CONFIG_JSON }}
+
+      # ── 7. 运行 prebuild（编译子项目 + 加密配置 + 生成图标） ──
+      - name: Prebuild sub-projects
+        run: npm run prebuild:sub
+
+      # ── 8. Webpack 构建 ──
+      - name: Build (webpack production)
+        run: npm run build
+
+      # ── 9. 生成 macOS 图标（需要 512x512 以上的 PNG） ──
+      - name: Generate macOS icon
+        if: matrix.platform == 'mac'
+        shell: bash
+        run: |
+          node scripts/generate-icon-png.js
+          echo "Icon files ready:"
+          ls -la assets/icon.*
+
+      # ── 10. electron-builder 打包 ──
+      - name: Package (Windows)
+        if: matrix.platform == 'win'
+        shell: bash
+        run: npx electron-builder --win --publish never
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Package (macOS)
+        if: matrix.platform == 'mac'
+        shell: bash
+        run: npx electron-builder --mac --publish never
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # macOS 不签名（没有 Apple Developer 证书）
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+
+      # ── 11. 上传打包产物 ──
+      - name: Upload artifacts (Windows)
+        if: matrix.platform == 'win'
+        uses: actions/upload-artifact@v4
+        with:
+          name: Hotel-Agent-Windows
+          path: |
+            release/*.exe
+          retention-days: 90
+          if-no-files-found: error
+
+      - name: Upload artifacts (macOS)
+        if: matrix.platform == 'mac'
+        uses: actions/upload-artifact@v4
+        with:
+          name: Hotel-Agent-macOS
+          path: |
+            release/*.dmg
+          retention-days: 90
+          if-no-files-found: error

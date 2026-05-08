@@ -1,0 +1,9 @@
+{
+  "platformCode": "ctrip",
+  "storeId": "demo-store",
+  "pageUrl": "https://ebooking.ctrip.com/rateplan/batchPriceSetting?microJump=true",
+  "profileDir": "C:/hotel-ota-automation/chrome-profile/ctrip",
+  "storageStatePath": "",
+  "headless": false,
+  "timeoutMs": 60000
+}

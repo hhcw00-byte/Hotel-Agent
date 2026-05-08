@@ -1,0 +1,27 @@
+{
+  "name": "ai-web-crawler",
+  "version": "2.0.0",
+  "description": "AI-driven intelligent web crawler with vision-based navigation",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "clean": "rimraf dist",
+    "start": "node dist/index.js"
+  },
+  "keywords": ["web", "ai", "vision", "crawler", "intelligent", "playwright"],
+  "author": "Hotel AI Browser Team",
+  "license": "MIT",
+  "dependencies": {
+    "playwright": "^1.40.0",
+    "openai": "^4.20.0",
+    "sharp": "^0.33.0",
+    "js-yaml": "^4.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "@types/js-yaml": "^4.0.9",
+    "typescript": "^5.3.0",
+    "rimraf": "^5.0.5"
+  }
+}

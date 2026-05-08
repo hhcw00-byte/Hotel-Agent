@@ -1,0 +1,22 @@
+{"taskId":"api-trip-public","skill":"api-trip-public-price","startTime":1775185145658,"endTime":1775185161322,"duration":15664,"success":true}
+{"taskId":"api-trip-public","skill":"api-trip-public-price","startTime":1775195100609,"endTime":1775195106668,"duration":6059,"success":false,"error":"403 This model is not available in your region."}
+{"taskId":"api-trip-public","skill":"api-trip-public-price","startTime":1775196781039,"endTime":1775197007397,"duration":226358,"success":true}
+{"taskId":"api-ctrip-backend","skill":"api-ctrip-backend-price","startTime":1775198761247,"endTime":1775198764097,"duration":2850,"success":false,"error":"403 This model is not available in your region."}
+{"taskId":"api-booking-public","skill":"api-booking-public-price","startTime":1775198761845,"endTime":1775198765192,"duration":3347,"success":false,"error":"403 This model is not available in your region."}
+{"taskId":"api-meituan-backend","skill":"api-meituan-backend-price","startTime":1775198760593,"endTime":1775198765785,"duration":5192,"success":false,"error":"403 This model is not available in your region."}
+{"taskId":"api-trip-public","skill":"api-trip-public-price","startTime":1775198761290,"endTime":1775198765839,"duration":4549,"success":false,"error":"403 This model is not available in your region."}
+{"taskId":"api-ctrip-public","skill":"api-ctrip-public-price","startTime":1775198764871,"endTime":1775198767142,"duration":2271,"success":false,"error":"403 This model is not available in your region."}
+{"taskId":"api-booking-public","skill":"api-booking-public-price","startTime":1775199061005,"endTime":1775199091671,"duration":30666,"success":true}
+{"taskId":"api-meituan-backend","skill":"api-meituan-backend-price","startTime":1775199062359,"endTime":1775199092399,"duration":30040,"success":true}
+{"taskId":"api-ctrip-backend","skill":"api-ctrip-backend-price","startTime":1775199063657,"endTime":1775199094543,"duration":30886,"success":true}
+{"taskId":"api-trip-public","skill":"api-trip-public-price","startTime":1775199062124,"endTime":1775199102770,"duration":40646,"success":true}
+{"taskId":"api-trip-public","skill":"api-trip-public-price","startTime":1775200921085,"endTime":1775201435107,"duration":514022,"success":true}
+{"taskId":"api-ctrip-public","skill":"api-ctrip-public-price","startTime":1775200922026,"endTime":1775201436317,"duration":514291,"success":true}
+{"taskId":"api-ctrip-public","skill":"api-ctrip-public-price","startTime":1775205360970,"endTime":1775205369797,"duration":8827,"success":false,"error":"403 This model is not available in your region."}
+{"taskId":"api-ctrip-public","skill":"api-ctrip-public-price","startTime":1775205422202,"endTime":1775205433202,"duration":11000,"success":true}
+{"taskId":"api-trip-public","skill":"api-trip-public-price","startTime":1775206381139,"endTime":1775206781434,"duration":400295,"success":true}
+{"taskId":"api-trip-public","skill":"api-trip-public-price","startTime":1775217061061,"endTime":1775217288706,"duration":227645,"success":true}
+{"taskId":"api-trip-public","skill":"api-trip-public-price","startTime":1775219101426,"endTime":1775219108449,"duration":7023,"success":true}
+{"taskId":"api-trip-public","skill":"api-trip-public-price","startTime":1775220061387,"endTime":1775220437692,"duration":376305,"success":true}
+{"taskId":"api-trip-public","skill":"api-trip-public-price","startTime":1775222822571,"endTime":1775222870136,"duration":47565,"success":true}
+{"taskId":"api-trip-public","skill":"api-trip-public-price","startTime":1775228629034,"endTime":1775228962983,"duration":333949,"success":true}

@@ -1,0 +1,6 @@
+{
+  "platformCode": "unknown_platform",
+  "pageUrl": "about:blank",
+  "headless": true,
+  "timeoutMs": 3000
+}

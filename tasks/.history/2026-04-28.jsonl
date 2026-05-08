@@ -1,0 +1,10 @@
+{"taskId":"api-booking-backend","skill":"api-booking-backend-price","startTime":1777363141206,"endTime":1777363201287,"duration":60081,"success":false,"error":"Recovery completed but no valid data produced"}
+{"taskId":"api-booking-public","skill":"api-booking-public-price","startTime":1777383840016,"endTime":1777383882092,"duration":42076,"success":true}
+{"taskId":"api-ctrip-public","skill":"api-ctrip-public-price","startTime":1777390395607,"endTime":1777390417476,"duration":21869,"success":false,"error":"Recovery completed but no valid data produced"}
+{"taskId":"api-meituan-backend","skill":"api-meituan-backend-price","startTime":1777390380026,"endTime":1777390423901,"duration":43875,"success":true}
+{"taskId":"api-booking-public","skill":"api-booking-public-price","startTime":1777390380019,"endTime":1777390424249,"duration":44230,"success":true}
+{"taskId":"api-ctrip-backend","skill":"api-ctrip-backend-price","startTime":1777390428985,"endTime":1777390452099,"duration":23114,"success":false,"error":"Recovery completed but no valid data produced"}
+{"taskId":"api-meituan-room-status","skill":"api-meituan-realtime-status","startTime":1777390423901,"endTime":1777390519557,"duration":95656,"success":true}
+{"taskId":"api-ctrip-backend","skill":"api-ctrip-backend-price","startTime":1777390996108,"endTime":1777391020700,"duration":24592,"success":false,"error":"Recovery completed but no valid data produced"}
+{"taskId":"api-booking-public","skill":"api-booking-public-price","startTime":1777390980025,"endTime":1777391020826,"duration":40801,"success":true}
+{"taskId":"api-meituan-backend","skill":"api-meituan-backend-price","startTime":1777390980030,"endTime":1777391024895,"duration":44865,"success":true}

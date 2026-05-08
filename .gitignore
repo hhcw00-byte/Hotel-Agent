@@ -1,0 +1,79 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+release/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Coverage
+coverage/
+
+# IDE
+.vscode/
+.idea/
+.claude/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Generated macOS icon (CI only)
+assets/icon.png
+
+# Config (may contain sensitive data)
+config.json
+llm-config.json
+llm-config.enc
+db-config.json
+db-config.enc
+scripts/ai-web-crawler/config.yaml
+scripts/ai-web-crawler/config.enc
+scripts/ai-web-crawler/config.enc.bak
+
+# Electron
+out/
+
+# Database compiled output
+database/dist/
+
+# Scripts compiled output & artifacts
+scripts/*/dist/
+scripts/*/node_modules/
+scripts/ai-web-crawler/screenshots/
+
+# TypeScript compiled output in source directories
+src/**/*.js
+src/**/*.js.map
+src/**/*.d.ts
+src/**/*.d.ts.map
+!src/**/*.config.js
+
+# Runtime data
+data/api-results/
+data/memory/
+data/*.db
+data/*-diag.json
+
+# npm cache
+.npm-cache/
+
+# Screenshots
+screenshots/
+
+# Temp artifacts from npm scripts
+chcp
+npm
+hotel-ai-browser@*
+/official-docs/
+
+tmp-*.json
+data/smart-price-adjust-diag-*.json
+*.result.json
+*.log

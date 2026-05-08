@@ -1,0 +1,7 @@
+{
+  "platformCode": "booking",
+  "storeId": "demo-store",
+  "pageUrl": "https://admin.booking.com/hotel/hoteladmin/extranet_ng/manage/calendar/index.html",
+  "headless": false,
+  "timeoutMs": 15000
+}

@@ -1,0 +1,17 @@
+{
+  "platformCode": "booking",
+  "startDate": "2026-05-20",
+  "endDate": "2026-05-21",
+  "roomList": [
+    {
+      "roomName": "鍙屼汉闂?,
+      "price": "399"
+    }
+  ],
+  "runtime": {
+    "browserChannel": "chrome",
+    "userDataDir": "D:\\a-zhuxiangmu\\Hotel-Agent\\.runtime\\booking-v2-chrome",
+    "pricePageUrl": "https://admin.booking.com/hotel/hoteladmin/extranet_ng/manage/calendar/index.html",
+    "timeoutMs": 30000
+  }
+}

@@ -1,0 +1,137 @@
+{
+  "tasks": [
+    {
+      "id": "api-ctrip-public",
+      "skill": "api-ctrip-public-price",
+      "platform": "ctrip",
+      "cron": "50 16 * * *",
+      "enabled": false,
+      "scheduleType": "fixed-time",
+      "scheduleConfig": {
+        "times": [
+          "16:50"
+        ]
+      },
+      "params": {
+        "cookieDomain": "hotels.ctrip.com",
+        "startUrl": "https://hotels.ctrip.com/",
+        "crawlerTarget": "搜索住小叮三里屯酒店，进入酒店详情页查看房价"
+      },
+      "lastExecutedAt": 1778230286203
+    },
+    {
+      "id": "api-ctrip-backend",
+      "skill": "api-ctrip-backend-price",
+      "platform": "ctrip",
+      "cron": "11 17 * * *",
+      "enabled": false,
+      "scheduleType": "fixed-time",
+      "scheduleConfig": {
+        "times": [
+          "17:11"
+        ]
+      },
+      "params": {
+        "cookieDomain": "ebooking.ctrip.com",
+        "startUrl": "https://ebooking.ctrip.com/",
+        "crawlerTarget": "房价管理或房量日历页面，查看房型房价数据"
+      },
+      "lastExecutedAt": 1778231460018
+    },
+    {
+      "id": "api-meituan-backend",
+      "skill": "api-meituan-backend-price",
+      "platform": "meituan",
+      "cron": "4 18 * * *",
+      "enabled": false,
+      "scheduleType": "fixed-time",
+      "scheduleConfig": {
+        "times": [
+          "18:04"
+        ]
+      },
+      "params": {
+        "cookieDomain": "me.meituan.com",
+        "startUrl": "https://me.meituan.com/",
+        "crawlerTarget": "商家后台房价管理页面，查看房型房价库存数据"
+      },
+      "lastExecutedAt": 1778234400005
+    },
+    {
+      "id": "api-trip-public",
+      "skill": "api-trip-public-price",
+      "platform": "trip",
+      "cron": "50 16 * * *",
+      "enabled": false,
+      "scheduleType": "fixed-time",
+      "scheduleConfig": {
+        "times": [
+          "16:50"
+        ]
+      },
+      "params": {
+        "cookieDomain": "trip.com",
+        "startUrl": "https://www.trip.com/",
+        "crawlerTarget": "搜索住小叮三里屯酒店，进入酒店详情页查看房价"
+      },
+      "lastExecutedAt": 1778230200017
+    },
+    {
+      "id": "api-booking-public",
+      "skill": "api-booking-public-price",
+      "platform": "booking",
+      "cron": "34 11 * * *",
+      "enabled": false,
+      "scheduleType": "fixed-time",
+      "scheduleConfig": {
+        "times": [
+          "11:34"
+        ]
+      },
+      "params": {
+        "cookieDomain": "www.booking.com",
+        "startUrl": "https://www.booking.com/",
+        "crawlerTarget": "搜索住小叮三里屯酒店，进入酒店详情页查看房价"
+      },
+      "lastExecutedAt": 1777390980025
+    },
+    {
+      "id": "api-booking-backend",
+      "skill": "api-booking-backend-price",
+      "platform": "booking",
+      "cron": "34 11 * * *",
+      "enabled": false,
+      "scheduleType": "fixed-time",
+      "scheduleConfig": {
+        "times": [
+          "11:34"
+        ]
+      },
+      "params": {
+        "cookieDomain": "admin.booking.com",
+        "hotelId": 15994510,
+        "startUrl": "https://admin.booking.com/",
+        "crawlerTarget": "登录后台，进入日历/房价管理页面"
+      }
+    },
+    {
+      "id": "api-meituan-room-status",
+      "skill": "api-meituan-realtime-status",
+      "platform": "meituan",
+      "cron": "4 16 * * *",
+      "enabled": false,
+      "scheduleType": "fixed-time",
+      "scheduleConfig": {
+        "times": [
+          "16:04"
+        ]
+      },
+      "params": {
+        "cookieDomain": "pms.meituan.com",
+        "startUrl": "https://pms.meituan.com/#qk-workbench",
+        "crawlerTarget": "点击左侧菜单【房态预测】，查看今日房态数据"
+      },
+      "lastExecutedAt": 1776937385218
+    }
+  ]
+}

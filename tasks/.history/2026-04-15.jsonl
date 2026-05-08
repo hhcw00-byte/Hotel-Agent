@@ -1,0 +1,22 @@
+{"taskId":"api-trip-public","skill":"api-trip-public-price","startTime":1776242100023,"endTime":1776242174794,"duration":74771,"success":false,"error":"Agent completed but no valid data produced"}
+{"taskId":"api-meituan-backend","skill":"api-meituan-backend-price","startTime":1776242820024,"endTime":1776242938850,"duration":118826,"success":false,"error":"Agent completed but no valid data produced"}
+{"taskId":"api-trip-public","skill":"api-trip-public-price","startTime":1776242820019,"endTime":1776242953545,"duration":133526,"success":false,"error":"Agent completed but no valid data produced"}
+{"taskId":"api-ctrip-public","skill":"api-ctrip-public-price","startTime":1776243900025,"endTime":1776244059941,"duration":159916,"success":false,"error":"Agent completed but no valid data produced"}
+{"taskId":"api-trip-public","skill":"api-trip-public-price","startTime":1776243900028,"endTime":1776244061340,"duration":161312,"success":false,"error":"Agent completed but no valid data produced"}
+{"taskId":"api-meituan-backend","skill":"api-meituan-backend-price","startTime":1776243900020,"endTime":1776244090367,"duration":190347,"success":false,"error":"Agent completed but no valid data produced"}
+{"taskId":"api-meituan-room-status","skill":"api-meituan-realtime-status","startTime":1776247680020,"endTime":1776247931284,"duration":251264,"success":true}
+{"taskId":"api-trip-public","skill":"api-trip-public-price","startTime":1776247680024,"endTime":1776248031517,"duration":351493,"success":true}
+{"taskId":"api-ctrip-public","skill":"api-ctrip-public-price","startTime":1776247680015,"endTime":1776248175603,"duration":495588,"success":true}
+{"taskId":"api-ctrip-public","skill":"api-ctrip-public-price","startTime":1776248280007,"endTime":1776248292516,"duration":12509,"success":true}
+{"taskId":"api-trip-public","skill":"api-trip-public-price","startTime":1776248280010,"endTime":1776248317354,"duration":37344,"success":true}
+{"taskId":"api-meituan-room-status","skill":"api-meituan-realtime-status","startTime":1776248280013,"endTime":1776248385624,"duration":105611,"success":true}
+{"taskId":"api-ctrip-public","skill":"api-ctrip-public-price","startTime":1776251880019,"endTime":1776251971453,"duration":91434,"success":false,"error":"Agent completed but no valid data produced"}
+{"taskId":"api-meituan-room-status","skill":"api-meituan-realtime-status","startTime":1776252120035,"endTime":1776252208659,"duration":88624,"success":true}
+{"taskId":"api-trip-public","skill":"api-trip-public-price","startTime":1776252120028,"endTime":1776252237583,"duration":117555,"success":false,"error":"Agent completed but no valid data produced"}
+{"taskId":"api-ctrip-public","skill":"api-ctrip-public-price","startTime":1776252121224,"endTime":1776252833577,"duration":712353,"success":false,"error":"Agent completed but no valid data produced"}
+{"taskId":"api-meituan-room-status","skill":"api-meituan-realtime-status","startTime":1776253320025,"endTime":1776253409068,"duration":89043,"success":true}
+{"taskId":"api-meituan-room-status","skill":"api-meituan-realtime-status","startTime":1776253860029,"endTime":1776254186174,"duration":326145,"success":true}
+{"taskId":"api-trip-public","skill":"api-trip-public-price","startTime":1776253860025,"endTime":1776254403363,"duration":543338,"success":false,"error":"Agent completed but no valid data produced"}
+{"taskId":"api-ctrip-public","skill":"api-ctrip-public-price","startTime":1776253860020,"endTime":1776254718017,"duration":857997,"success":false,"error":"Agent completed but no valid data produced"}
+{"taskId":"api-trip-public","skill":"api-trip-public-price","startTime":1776255240022,"endTime":1776255278224,"duration":38202,"success":true}
+{"taskId":"api-meituan-room-status","skill":"api-meituan-realtime-status","startTime":1776255240025,"endTime":1776255340634,"duration":100609,"success":true}

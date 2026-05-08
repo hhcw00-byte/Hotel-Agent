@@ -1,0 +1,7 @@
+{
+  "platformCode": "meituan",
+  "storeId": "demo-store",
+  "pageUrl": "https://me.meituan.com/ebooking/merchant/product/batch-price",
+  "headless": false,
+  "timeoutMs": 15000
+}

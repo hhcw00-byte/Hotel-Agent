@@ -1,0 +1,11 @@
+{"taskId":"backend-pricing-meituan","skill":"backend-pricing","startTime":1774419000013,"endTime":1774419218369,"duration":218356,"success":true}
+{"taskId":"backend-pricing-meituan","skill":"backend-pricing","startTime":1774420080012,"endTime":1774420156211,"duration":76199,"success":true}
+{"taskId":"backend-pricing-meituan","skill":"backend-pricing","startTime":1774420260012,"endTime":1774420894155,"duration":634143,"success":true}
+{"taskId":"backend-pricing-meituan","skill":"backend-pricing","startTime":1774421340016,"endTime":1774421505945,"duration":165929,"success":false,"error":"No content in API response (finish_reason: content_filter)"}
+{"taskId":"backend-pricing-meituan","skill":"backend-pricing","startTime":1774425180014,"endTime":1774425510134,"duration":330120,"success":true}
+{"taskId":"backend-pricing-meituan","skill":"backend-pricing","startTime":1774426140004,"endTime":1774426496480,"duration":356476,"success":true}
+{"taskId":"backend-pricing-meituan","skill":"backend-pricing","startTime":1774427640011,"endTime":1774427971844,"duration":331833,"success":true}
+{"taskId":"competitive-intel-ctrip","skill":"competitive-intel","startTime":1774429320006,"endTime":1774429849930,"duration":529924,"success":true}
+{"taskId":"backend-pricing-ctrip","skill":"backend-pricing","startTime":1774429849931,"endTime":1774430178317,"duration":328386,"success":true}
+{"taskId":"public-pricing-ctrip","skill":"public-pricing","startTime":1774432020014,"endTime":1774432705932,"duration":685918,"success":true}
+{"taskId":"public-pricing-ctrip","skill":"public-pricing","startTime":1774436460005,"endTime":1774436491578,"duration":31573,"success":false,"error":"Request timed out."}
