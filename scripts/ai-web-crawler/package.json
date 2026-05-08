@@ -13,7 +13,7 @@
   "author": "Hotel AI Browser Team",
   "license": "MIT",
   "dependencies": {
-    "playwright": "^1.40.0",
+    "playwright-core": "^1.40.0",
     "openai": "^4.20.0",
     "sharp": "^0.33.0",
     "js-yaml": "^4.1.0"

@@ -6,7 +6,7 @@
  */
 
 import { createHash } from 'crypto';
-import { Page, Response } from 'playwright';
+import { Page, Response } from 'playwright-core';
 import { EnhancedCapturedRequest, APICandidate } from './types';
 
 export class NetworkMonitor {

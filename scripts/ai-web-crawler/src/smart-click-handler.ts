@@ -3,7 +3,7 @@
  * Multi-layer locator strategies with scoring and disambiguation
  */
 
-import { Page, ElementHandle, CDPSession } from 'playwright';
+import { Page, ElementHandle, CDPSession } from 'playwright-core';
 import { ClickResult, ElementScore, InputResult } from './types';
 import { HumanMouse } from './human-mouse';
 

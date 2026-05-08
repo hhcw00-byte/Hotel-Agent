@@ -3,7 +3,7 @@
  * 检测页面是否为登录页面，支持 DOM 特征检测和可选的 LLM 截图二次确认
  */
 
-import { Page } from 'playwright';
+import { Page } from 'playwright-core';
 import { ScreenshotManager } from './screenshot-manager';
 
 export interface LoginDetectionResult {
