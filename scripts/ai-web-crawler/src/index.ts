@@ -97,6 +97,9 @@ async function main() {
       }),
     };
 
+    // 输出到 stdout（skill-executor 读取 stdout 作为结果）
+    console.log(JSON.stringify(errorResult));
+    // 同时输出到 stderr 方便调试
     console.error(JSON.stringify(errorResult, null, 2));
     process.exit(1);
   }

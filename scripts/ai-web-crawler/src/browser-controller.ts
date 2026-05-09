@@ -1229,7 +1229,7 @@ export class BrowserController {
    * Close all pooled connections (call this when application shuts down)
    */
   static async closeAllConnections(): Promise<void> {
-    console.log('[BrowserController] Closing all pooled connections...');
+    console.error('[BrowserController] Closing all pooled connections...');
 
     for (const [port, browser] of BrowserController.connectionPool.entries()) {
       try {
@@ -1244,7 +1244,7 @@ export class BrowserController {
 
     BrowserController.connectionPool.clear();
     BrowserController.connectionRefCount.clear();
-    console.log('[BrowserController] All connections closed');
+    console.error('[BrowserController] All connections closed');
   }
 
   async connectBackground(startUrl: string, port?: number): Promise<void> {
