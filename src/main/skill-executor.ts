@@ -409,7 +409,8 @@ export class SkillExecutor {
             if (this.logger) {
               this.logger.warn('skill-executor', `Script exited with code ${code}, but has output`, {
                 skillName: skill.metadata.name,
-                executionTime: Date.now() - Date.now()
+                executionTime: Date.now() - Date.now(),
+                stdout: stdout.substring(0, 500)
               });
             }
             resolve({ stdout, stderr });
