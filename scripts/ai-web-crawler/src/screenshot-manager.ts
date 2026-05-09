@@ -9,7 +9,7 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
-import { Page } from 'playwright';
+import { Page } from 'playwright-core';
 import { ScreenshotOptions, ScreenshotMetadata } from './types';
 
 // Lazy-loaded sharp instance
